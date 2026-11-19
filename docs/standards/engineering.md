@@ -58,6 +58,8 @@ Every push to a pull request runs these checks:
 4. `expo-doctor`
 5. `npm audit` at high severity
 
+After the checks pass on a push to `main`, CI queues EAS development builds for iOS and Android with `--no-wait`. The job reads the `EXPO_TOKEN` repository secret. Each run uses one iOS and one Android build from the EAS plan quota.
+
 Maestro flows run on the owner's iPhone 13 and Android 12 device before each release.
 
 ## Git workflow

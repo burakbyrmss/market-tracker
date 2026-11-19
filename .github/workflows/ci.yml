@@ -32,3 +32,26 @@ jobs:
         run: npx expo-doctor
       - name: Audit
         run: npm audit --audit-level=high
+
+  eas-development-build:
+    # Every update to main queues fresh development builds, so the binaries on the phones
+    # always match main's native dependencies (ADR 0001).
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: eas-development-build
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: expo/expo-github-action@8.2.1
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+      - name: Queue iOS and Android development builds
+        run: eas build --profile development --platform all --non-interactive --no-wait
