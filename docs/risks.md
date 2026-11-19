@@ -4,24 +4,24 @@ Review this file at the start of each milestone. Close an item by recording the 
 
 ## Risks
 
-| Risk | Impact | Mitigation | Owner milestone |
-| --- | --- | --- | --- |
-| No written data license from Binance or Kraken by release | The V1 store release is blocked | Send licensing emails at M1. Option C in ADR 0007 is the fallback. | M1, M16 |
-| Kraken terms not confirmed from Kraken's own pages | The fallback provider might be unusable | Read Kraken's legal pages before building its adapter | M5 |
-| Binance and Kraken report different 24-hour volumes | The top-100 list differs by provider | Document the behavior. The list follows the active provider. | M7 |
-| No Dutch or US IP available for local testing | The fallback is not tested against a real block | Unit tests force HTTP 451. Run a VPN smoke test before release. | M6, M16 |
-| Victory Native XL performs poorly on Android | Charts or lists stutter | The M2 spike measures it before any screen depends on it | M2 |
-| The CC0 icon set is unmaintained | Newer coins have no logo | Lettered circles cover missing logos | M14 |
-| A provider changes its API, limits, or terms | Data stops loading | Run the live smoke script before each release. The provider contract allows a swap. | Each release |
-| USDT drifts from USD | Converted prices are slightly off | The detail screen shows the conversion method | M9 |
+| Risk                                                      | Impact                                          | Mitigation                                                                          | Owner milestone |
+| --------------------------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------- | --------------- |
+| No written data license from Binance or Kraken by release | The V1 store release is blocked                 | Send licensing emails at M1. Option C in ADR 0007 is the fallback.                  | M1, M16         |
+| Kraken terms not confirmed from Kraken's own pages        | The fallback provider might be unusable         | Read Kraken's legal pages before building its adapter                               | M5              |
+| Binance and Kraken report different 24-hour volumes       | The top-100 list differs by provider            | Document the behavior. The list follows the active provider.                        | M7              |
+| No Dutch or US IP available for local testing             | The fallback is not tested against a real block | Unit tests force HTTP 451. Run a VPN smoke test before release.                     | M6, M16         |
+| Victory Native XL performs poorly on Android              | Charts or lists stutter                         | The M2 spike measures it before any screen depends on it                            | M2              |
+| The CC0 icon set is unmaintained                          | Newer coins have no logo                        | Lettered circles cover missing logos                                                | M14             |
+| A provider changes its API, limits, or terms              | Data stops loading                              | Run the live smoke script before each release. The provider contract allows a swap. | Each release    |
+| USDT drifts from USD                                      | Converted prices are slightly off               | The detail screen shows the conversion method                                       | M9              |
 
 ## Open questions
 
-| Question | Label | Resolve by |
-| --- | --- | --- |
-| Does Binance offer a market-data-only WebSocket host? | Assumption | M6 |
-| What are Kraken's exact public rate limits? | Assumption | M5 |
-| What do the ECB data terms allow for caching and display? | Not settled | M8 |
-| Does the CC0 icon set's metadata provide full coin names? | Assumption | M14 |
-| Does Binance or Kraken grant written permission for display in a free public app? | Not settled | M16 |
-| Which device is the low-end Android test device? | Open | M16 |
+| Question                                                                          | Label       | Resolve by |
+| --------------------------------------------------------------------------------- | ----------- | ---------- |
+| Does Binance offer a market-data-only WebSocket host?                             | Assumption  | M6         |
+| What are Kraken's exact public rate limits?                                       | Assumption  | M5         |
+| What do the ECB data terms allow for caching and display?                         | Not settled | M8         |
+| Does the CC0 icon set's metadata provide full coin names?                         | Assumption  | M14        |
+| Does Binance or Kraken grant written permission for display in a free public app? | Not settled | M16        |
+| Which device is the low-end Android test device?                                  | Open        | M16        |

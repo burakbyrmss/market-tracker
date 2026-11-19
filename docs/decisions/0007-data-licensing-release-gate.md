@@ -13,11 +13,11 @@ Keyless exchange APIs are free and work without a backend. Their terms for displ
 
 For a public, backend-free app, no option is free, backend-free, and clearly licensed at once.
 
-| Option | Free | No backend | Licensed |
-| --- | --- | --- | --- |
-| A. Keyless exchange APIs (Binance and Kraken) | Yes | Yes | Unclear |
-| B. Free aggregator tier with an API key | Yes | Yes | Unclear, and the shared quota fails at scale |
-| C. Paid aggregator behind a small caching proxy | No, about $35 per month or more | No. The proxy is a stateless cache. | Yes |
+| Option                                          | Free                            | No backend                          | Licensed                                     |
+| ----------------------------------------------- | ------------------------------- | ----------------------------------- | -------------------------------------------- |
+| A. Keyless exchange APIs (Binance and Kraken)   | Yes                             | Yes                                 | Unclear                                      |
+| B. Free aggregator tier with an API key         | Yes                             | Yes                                 | Unclear, and the shared quota fails at scale |
+| C. Paid aggregator behind a small caching proxy | No, about $35 per month or more | No. The proxy is a stateless cache. | Yes                                          |
 
 ## Decision
 
