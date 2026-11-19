@@ -19,6 +19,8 @@ The app uses Expo development builds. Expo Go is not supported.
 
 Run `npm run check`. It runs the type check, lint, format check, and tests. CI runs the same checks plus `expo-doctor` and `npm audit`.
 
+After the checks pass on a push to `main`, CI queues EAS development builds for iOS and Android. Install the new build from expo.dev when a change adds or updates a native package. The job needs an `EXPO_TOKEN` repository secret.
+
 ## Documentation
 
 - [Product requirements](docs/product/requirements.md)
