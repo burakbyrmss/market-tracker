@@ -1,6 +1,6 @@
 # 0011: Use Victory Native XL 42 for charts
 
-- **Status:** Accepted
+- **Status:** Provisional until the spike runs on a build that includes Skia
 - **Date:** 2026-11-19
 
 ## Context
@@ -12,7 +12,7 @@ Victory Native 43 depends on the renamed `react-native-skia` package, version 2.
 ## Decision
 
 - Use `victory-native` 42.0.1, pinned exactly, with the Expo-pinned `@shopify/react-native-skia`.
-- Add both packages at M11, when the first chart ships. `main` does not carry them before then.
+- Both packages are in `main` because the owner merged the spike (PR #6).
 - Move to Victory Native 43 or later when an Expo SDK pins the renamed `react-native-skia`. Record the move in a new ADR.
 - Use React Native's `FlatList` for the market lists. Switch to FlashList only if M7 shows a measured problem. This is a judgment call, not a measured result. See the Measurements section.
 
@@ -30,16 +30,16 @@ Victory Native 43 depends on the renamed `react-native-skia` package, version 2.
 
 ## Measurements
 
-The spike lives on the `m2/perf-spike-v2` branch and is never merged. It draws a line chart with 365 daily points and a dot that follows the finger. It also renders a 100-row list in FlatList and FlashList variants, with every price updating once per second. An on-screen meter counts frames per second on the JS thread and on the UI thread, one sample per second over a 15-second run.
+The owner merged the spike into `main` in PR #6. It lives in `src/app/spike.tsx` and `src/spike/`. Remove it before the V1 release (M16). It draws a line chart with 365 daily points and a dot that follows the finger. It also renders a 100-row list in FlatList and FlashList variants, with every price updating once per second. An on-screen meter counts frames per second on the JS thread and on the UI thread, one sample per second over a 15-second run.
 
 Pass bar, set before the run: median of at least 55 fps on both threads for every variant, over 3 runs.
 
-| Run        | Device                                           | Build               | Result                                                                               |
-| ---------- | ------------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------ |
-| 2026-11-19 | Owner's device, Expo Go with `--no-dev --minify` | Production JS       | The owner reported that all variants met the bar. The raw samples were not recorded. |
-| Pending    | Android 12 device                                | EAS `preview` build | Not measured yet                                                                     |
+| Run        | Device            | Build                                                        | Result                                                                                                                                                                               |
+| ---------- | ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-11-19 | Owner's iPhone 13 | Expo Go, then an iOS development build from commit `0477de8` | Did not run. Neither binary contains Skia (inferred from the error and the build commit), so the spike screen fails with `RNSkiaModule could not be found`. No variant was measured. |
+| Pending    | Android 12 device | EAS `preview` build                                          | Not measured yet                                                                                                                                                                     |
 
-The raw numbers were not recorded, and the Android 12 run has not happened. Both gaps are tracked in [Risks](../risks.md). FlatList versus FlashList was not compared on recorded numbers. That is why the list choice above is a judgment call.
+No measurement exists yet. Expo Go cannot load Skia, so the spike needs a development or preview build made after PR #6. Until a run is recorded here, the version pin above stands and the performance question stays open. FlatList versus FlashList is also unmeasured, so the list choice above is a judgment call.
 
 ## Sources
 
