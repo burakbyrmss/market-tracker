@@ -18,6 +18,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Generate Expo types
+        run: npm run typegen
       - name: Type check
         run: npm run typecheck
       - name: Lint
