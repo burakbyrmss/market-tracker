@@ -48,6 +48,15 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/ban-ts-comment': 'error',
       'no-console': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "ImportDeclaration[source.value='react-native'] ImportSpecifier[imported.name='StyleSheet']",
+          message:
+            'Style with NativeWind className. See docs/decisions/0014-nativewind-styling.md.',
+        },
+      ],
     },
   },
   ...layerConfigs,
