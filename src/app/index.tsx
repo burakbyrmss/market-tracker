@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { Screen } from '@/shared/ui/screen';
 
@@ -13,8 +13,10 @@ export default function HomeScreen() {
         >
           Market Tracker
         </Text>
-        <Link href="/spike" className="text-lg text-blue-600">
-          Open M2 performance spike
+        <Link href="/spike" asChild>
+          <Pressable className="rounded-lg bg-blue-600 px-4 py-3">
+            <Text className="text-lg font-semibold text-white">Open M2 performance spike</Text>
+          </Pressable>
         </Link>
       </View>
     </Screen>
