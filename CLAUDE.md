@@ -58,5 +58,6 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Strict TS: no `any`, no `@ts-ignore`, no lint suppressions.
 - Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas.
 - Register third-party components that take `className` in `src/shared/ui/interop.ts`.
+- `expo-router` `Link` ignores `className` on native. Use `<Link href asChild>` around a `Pressable` with a styled `Text`.
 - Comments explain why, never what.
 - Small, single-purpose commits. Conventional commit messages.
