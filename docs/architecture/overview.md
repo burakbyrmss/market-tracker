@@ -18,6 +18,7 @@ This document explains how Market Tracker V1 is structured and why. Decisions be
 | Validation                | Zod, at boundaries only                                                                | —                                                             |
 | Charts                    | Victory Native XL, provisional until M2                                                | [0011](../decisions/0011-charts-victory-native-xl.md)         |
 | Translations              | i18next, `expo-localization`, and `Intl.NumberFormat`                                  | —                                                             |
+| Styling                   | NativeWind 4 (Tailwind 3.4). Screens render inside `Screen`, which applies safe areas. | [0014](../decisions/0014-nativewind-styling.md)               |
 | Crash reporting           | Sentry, crash reports only                                                             | [0009](../decisions/0009-sentry-crash-only.md)                |
 | Updates                   | EAS Build, EAS Submit, and EAS Update                                                  | [0010](../decisions/0010-eas-update.md)                       |
 | Tests                     | Jest, React Native Testing Library, and Maestro                                        | —                                                             |
