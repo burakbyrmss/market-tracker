@@ -4,7 +4,20 @@ Market Tracker is a mobile app for iOS and Android that tracks cryptocurrency an
 
 ## Status
 
-The project is in planning. No application code exists yet. Setup and run instructions arrive with milestone M1.
+Milestone M1 (scaffold and CI) is in progress. See the [roadmap](docs/roadmap.md).
+
+## Run the app
+
+The app uses Expo development builds. Expo Go is not supported.
+
+1. Install Node.js 26 and run `npm ci`.
+2. Build a development build for your device with `npx eas-cli@latest build --profile development --platform android`. Use `--platform ios` for an iPhone. An iPhone build needs an Apple Developer account.
+3. Install the build on your device.
+4. Run `npm start` and open the app on the device.
+
+## Check your work
+
+Run `npm run check`. It runs the type check, lint, format check, and tests. CI runs the same checks plus `expo-doctor` and `npm audit`.
 
 ## Documentation
 

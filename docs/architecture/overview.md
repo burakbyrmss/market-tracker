@@ -4,23 +4,23 @@ This document explains how Market Tracker V1 is structured and why. Decisions be
 
 ## Stack
 
-| Area | Choice | ADR |
-| --- | --- | --- |
-| Runtime | Expo with development builds. Expo Go is not supported. | [0001](../decisions/0001-expo-development-builds.md) |
-| Language | TypeScript with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes` | — |
-| Navigation | Expo Router | [0002](../decisions/0002-expo-router.md) |
-| REST data | TanStack Query | [0003](../decisions/0003-state-query-zustand-mmkv.md) |
-| Live prices and app state | Zustand | [0003](../decisions/0003-state-query-zustand-mmkv.md) |
-| Storage | MMKV | [0003](../decisions/0003-state-query-zustand-mmkv.md) |
-| Crypto data | Binance, with Kraken as fallback, behind one provider contract | [0004](../decisions/0004-provider-independent-market-data.md) |
-| FX data | Frankfurter, ECB source only | [0005](../decisions/0005-fx-frankfurter-ecb.md) |
-| Money arithmetic | A decimal library behind `domain/money` | [0006](../decisions/0006-decimal-money-module.md) |
-| Validation | Zod, at boundaries only | — |
-| Charts | Victory Native XL, provisional until M2 | [0011](../decisions/0011-charts-victory-native-xl.md) |
-| Translations | i18next, `expo-localization`, and `Intl.NumberFormat` | — |
-| Crash reporting | Sentry, crash reports only | [0009](../decisions/0009-sentry-crash-only.md) |
-| Updates | EAS Build, EAS Submit, and EAS Update | [0010](../decisions/0010-eas-update.md) |
-| Tests | Jest, React Native Testing Library, and Maestro | — |
+| Area                      | Choice                                                                                 | ADR                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Runtime                   | Expo with development builds. Expo Go is not supported.                                | [0001](../decisions/0001-expo-development-builds.md)          |
+| Language                  | TypeScript with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes` | —                                                             |
+| Navigation                | Expo Router                                                                            | [0002](../decisions/0002-expo-router.md)                      |
+| REST data                 | TanStack Query                                                                         | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Live prices and app state | Zustand                                                                                | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Storage                   | MMKV                                                                                   | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Crypto data               | Binance, with Kraken as fallback, behind one provider contract                         | [0004](../decisions/0004-provider-independent-market-data.md) |
+| FX data                   | Frankfurter, ECB source only                                                           | [0005](../decisions/0005-fx-frankfurter-ecb.md)               |
+| Money arithmetic          | A decimal library behind `domain/money`                                                | [0006](../decisions/0006-decimal-money-module.md)             |
+| Validation                | Zod, at boundaries only                                                                | —                                                             |
+| Charts                    | Victory Native XL, provisional until M2                                                | [0011](../decisions/0011-charts-victory-native-xl.md)         |
+| Translations              | i18next, `expo-localization`, and `Intl.NumberFormat`                                  | —                                                             |
+| Crash reporting           | Sentry, crash reports only                                                             | [0009](../decisions/0009-sentry-crash-only.md)                |
+| Updates                   | EAS Build, EAS Submit, and EAS Update                                                  | [0010](../decisions/0010-eas-update.md)                       |
+| Tests                     | Jest, React Native Testing Library, and Maestro                                        | —                                                             |
 
 ## Layers
 
@@ -40,16 +40,16 @@ Each provider module is the only code that knows its API's raw shape. Nothing ou
 
 ## Data shape
 
-| Type | Fields | Notes |
-| --- | --- | --- |
-| `AssetId` | Branded string, such as `BTC` | Our ID. It never changes when the provider changes. |
-| `CurrencyCode` | Branded ISO 4217 string, such as `EUR` | |
-| `CryptoAsset` | `id`, `name`, `logo` (optional) | Names and logos come from bundled files |
-| `FxCurrency` | `code`, `name` | |
-| `Quote` | `assetId`, `price`, `change24hPct`, `volume24h`, `updatedAt`, `source` | One shape for both markets. For FX, `updatedAt` is the ECB date. |
-| `PricePoint` | `time`, `price` | Chart data |
-| `Watchlists` | `crypto: AssetId[]`, `fx: CurrencyCode[]` | Ordered. V2 sync moves these IDs without change. |
-| `Settings` | `displayCurrency`, `language`, `theme` | `displayCurrency` is USD, EUR, or TRY |
+| Type           | Fields                                                                 | Notes                                                            |
+| -------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `AssetId`      | Branded string, such as `BTC`                                          | Our ID. It never changes when the provider changes.              |
+| `CurrencyCode` | Branded ISO 4217 string, such as `EUR`                                 |                                                                  |
+| `CryptoAsset`  | `id`, `name`, `logo` (optional)                                        | Names and logos come from bundled files                          |
+| `FxCurrency`   | `code`, `name`                                                         |                                                                  |
+| `Quote`        | `assetId`, `price`, `change24hPct`, `volume24h`, `updatedAt`, `source` | One shape for both markets. For FX, `updatedAt` is the ECB date. |
+| `PricePoint`   | `time`, `price`                                                        | Chart data                                                       |
+| `Watchlists`   | `crypto: AssetId[]`, `fx: CurrencyCode[]`                              | Ordered. V2 sync moves these IDs without change.                 |
+| `Settings`     | `displayCurrency`, `language`, `theme`                                 | `displayCurrency` is USD, EUR, or TRY                            |
 
 Prices from the network are plain numbers for display and charts. Any arithmetic on money uses `domain/money`. See [ADR 0006](../decisions/0006-decimal-money-module.md).
 
