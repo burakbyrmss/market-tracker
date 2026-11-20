@@ -26,3 +26,5 @@ The app has three kinds of state:
 
 - Two state libraries to learn. Each has one clear job.
 - Persisted data shapes are stored on devices. A change to a persisted shape needs a migration.
+- MMKV is `react-native-mmkv` 4, which runs on Nitro Modules (`react-native-nitro-modules`). Both are native, so adding them needed a new development build. Under Jest, MMKV uses its own in-memory mock and `test/setup.ts` stubs Nitro.
+- Every persisted store uses `persistOptions` from `src/shared/storage`. Stored data passes a Zod schema on load. Each settings field falls back to its default on its own, so one invalid value does not reset the rest.

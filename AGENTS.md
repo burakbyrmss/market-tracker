@@ -34,6 +34,8 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
 - All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
 - Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Do not reimplement the rule.
+- Persisted Zustand stores use `persistOptions` from `src/shared/storage` with a Zod schema. A change to a persisted shape bumps `version` and adds a `migrate`.
+- Settings (theme, language, display currency) live in `useSettings` (`src/features/settings/store.ts`). Change them through the store, never by calling `i18n.changeLanguage` or `colorScheme.set` directly.
 - Format prices, percentages, and rates with `src/shared/format`. Never call `toFixed` on a price for display.
 - No new dependency without a reason in the PR. Architectural changes need an ADR in `docs/decisions/`.
 
