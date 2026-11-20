@@ -1,6 +1,28 @@
 {
   "home": {
     "title": "Market Tracker",
-    "openSpike": "M2 performans testini aç"
+    "openSpike": "M2 performans testini aç",
+    "openSettings": "Ayarlar"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "theme": {
+      "label": "Tema",
+      "system": "Sistem",
+      "light": "Açık",
+      "dark": "Koyu"
+    },
+    "language": {
+      "label": "Dil",
+      "system": "Cihaz dili",
+      "en": "English",
+      "tr": "Türkçe"
+    },
+    "displayCurrency": {
+      "label": "Gösterim para birimi",
+      "USD": "ABD doları (USD)",
+      "EUR": "Euro (EUR)",
+      "TRY": "Türk lirası (TRY)"
+    }
   }
 }

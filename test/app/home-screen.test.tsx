@@ -19,3 +19,9 @@ test('home screen shows Turkish text when the language is Turkish', async () => 
 
   expect(screen.getByText('M2 performans testini aç')).toBeOnTheScreen();
 });
+
+test('home screen links to settings', async () => {
+  await render(<HomeScreen />);
+
+  expect(screen.getByText('Settings')).toBeOnTheScreen();
+});

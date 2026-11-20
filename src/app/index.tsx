@@ -20,6 +20,13 @@ export default function HomeScreen() {
             <Text className="text-lg font-semibold text-white">{t('home.openSpike')}</Text>
           </Pressable>
         </Link>
+        <Link href="/settings" asChild>
+          <Pressable className="rounded-lg bg-gray-200 px-4 py-3 dark:bg-gray-800">
+            <Text className="text-lg font-semibold text-black dark:text-white">
+              {t('home.openSettings')}
+            </Text>
+          </Pressable>
+        </Link>
       </View>
     </Screen>
   );
