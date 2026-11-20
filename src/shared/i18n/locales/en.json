@@ -1,6 +1,28 @@
 {
   "home": {
     "title": "Market Tracker",
-    "openSpike": "Open M2 performance spike"
+    "openSpike": "Open M2 performance spike",
+    "openSettings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": {
+      "label": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "language": {
+      "label": "Language",
+      "system": "Device language",
+      "en": "English",
+      "tr": "Türkçe"
+    },
+    "displayCurrency": {
+      "label": "Display currency",
+      "USD": "US dollar (USD)",
+      "EUR": "Euro (EUR)",
+      "TRY": "Turkish lira (TRY)"
+    }
   }
 }
