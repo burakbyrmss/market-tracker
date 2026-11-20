@@ -4,24 +4,24 @@ This document explains how Market Tracker V1 is structured and why. Decisions be
 
 ## Stack
 
-| Area                      | Choice                                                                                 | ADR                                                           |
-| ------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Runtime                   | Expo with development builds. Expo Go is not supported.                                | [0001](../decisions/0001-expo-development-builds.md)          |
-| Language                  | TypeScript with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes` | —                                                             |
-| Navigation                | Expo Router                                                                            | [0002](../decisions/0002-expo-router.md)                      |
-| REST data                 | TanStack Query                                                                         | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
-| Live prices and app state | Zustand                                                                                | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
-| Storage                   | MMKV                                                                                   | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
-| Crypto data               | Binance, with Kraken as fallback, behind one provider contract                         | [0004](../decisions/0004-provider-independent-market-data.md) |
-| FX data                   | Frankfurter, ECB source only                                                           | [0005](../decisions/0005-fx-frankfurter-ecb.md)               |
-| Money arithmetic          | A decimal library behind `domain/money`                                                | [0006](../decisions/0006-decimal-money-module.md)             |
-| Validation                | Zod, at boundaries only                                                                | —                                                             |
-| Charts                    | Victory Native XL, provisional until M2                                                | [0011](../decisions/0011-charts-victory-native-xl.md)         |
-| Translations              | i18next, `expo-localization`, and `Intl.NumberFormat`                                  | —                                                             |
-| Styling                   | NativeWind 4 (Tailwind 3.4). Screens render inside `Screen`, which applies safe areas. | [0014](../decisions/0014-nativewind-styling.md)               |
-| Crash reporting           | Sentry, crash reports only                                                             | [0009](../decisions/0009-sentry-crash-only.md)                |
-| Updates                   | EAS Build, EAS Submit, and EAS Update                                                  | [0010](../decisions/0010-eas-update.md)                       |
-| Tests                     | Jest, React Native Testing Library, and Maestro                                        | —                                                             |
+| Area                      | Choice                                                                                       | ADR                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Runtime                   | Expo with development builds. Expo Go is not supported.                                      | [0001](../decisions/0001-expo-development-builds.md)          |
+| Language                  | TypeScript with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes`       | —                                                             |
+| Navigation                | Expo Router                                                                                  | [0002](../decisions/0002-expo-router.md)                      |
+| REST data                 | TanStack Query                                                                               | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Live prices and app state | Zustand                                                                                      | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Storage                   | MMKV                                                                                         | [0003](../decisions/0003-state-query-zustand-mmkv.md)         |
+| Crypto data               | Binance, with Kraken as fallback, behind one provider contract                               | [0004](../decisions/0004-provider-independent-market-data.md) |
+| FX data                   | Frankfurter, ECB source only                                                                 | [0005](../decisions/0005-fx-frankfurter-ecb.md)               |
+| Money arithmetic          | big.js 7 behind `src/domain/money.ts`                                                        | [0006](../decisions/0006-decimal-money-module.md)             |
+| Validation                | Zod, at boundaries only                                                                      | —                                                             |
+| Charts                    | Victory Native XL, provisional until M2                                                      | [0011](../decisions/0011-charts-victory-native-xl.md)         |
+| Translations              | i18next with typed keys, `expo-localization`, and `Intl.NumberFormat` in `src/shared/format` | —                                                             |
+| Styling                   | NativeWind 4 (Tailwind 3.4). Screens render inside `Screen`, which applies safe areas.       | [0014](../decisions/0014-nativewind-styling.md)               |
+| Crash reporting           | Sentry, crash reports only                                                                   | [0009](../decisions/0009-sentry-crash-only.md)                |
+| Updates                   | EAS Build, EAS Submit, and EAS Update                                                        | [0010](../decisions/0010-eas-update.md)                       |
+| Tests                     | Jest, React Native Testing Library, and Maestro                                              | —                                                             |
 
 ## Layers
 
