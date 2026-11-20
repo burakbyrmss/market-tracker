@@ -31,6 +31,9 @@ void i18n.use(initReactI18next).init({
   lng: deviceLanguage(),
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
+  // Resources are bundled, so init finishes synchronously and stored settings can switch the
+  // language before the first render.
+  initAsync: false,
 });
 
 export default i18n;
