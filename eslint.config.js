@@ -36,6 +36,18 @@ const layerConfigs = Object.entries(layerBans).map(([folder, banned]) => ({
   },
 }));
 
+const noStyleSheet = {
+  selector:
+    "ImportDeclaration[source.value='react-native'] ImportSpecifier[imported.name='StyleSheet']",
+  message: 'Style with NativeWind className. See docs/decisions/0014-nativewind-styling.md.',
+};
+
+const noBigJs = {
+  selector: "ImportDeclaration[source.value='big.js']",
+  message:
+    'Use src/domain/money.ts for money arithmetic. See docs/decisions/0006-decimal-money-module.md.',
+};
+
 module.exports = defineConfig([
   expoConfig,
   prettierConfig,
@@ -48,18 +60,14 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/ban-ts-comment': 'error',
       'no-console': 'error',
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector:
-            "ImportDeclaration[source.value='react-native'] ImportSpecifier[imported.name='StyleSheet']",
-          message:
-            'Style with NativeWind className. See docs/decisions/0014-nativewind-styling.md.',
-        },
-      ],
+      'no-restricted-syntax': ['error', noStyleSheet, noBigJs],
     },
   },
   ...layerConfigs,
+  {
+    files: ['src/domain/money.ts'],
+    rules: { 'no-restricted-syntax': ['error', noStyleSheet] },
+  },
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'error',
