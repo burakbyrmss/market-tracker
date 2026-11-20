@@ -32,7 +32,9 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Parse external data (API, storage, deep links) with Zod once, in `providers/` or `shared/storage`. Inside, trust the types.
 - Asset and currency IDs are ours (`AssetId`, `CurrencyCode`), never provider symbols.
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
-- All money arithmetic goes through `domain/money` (decimal). Plain numbers only for chart plotting and display.
+- All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
+- Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Do not reimplement the rule.
+- Format prices, percentages, and rates with `src/shared/format`. Never call `toFixed` on a price for display.
 - No new dependency without a reason in the PR. Architectural changes need an ADR in `docs/decisions/`.
 
 ## External APIs
@@ -59,5 +61,6 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas.
 - Register third-party components that take `className` in `src/shared/ui/interop.ts`.
 - `expo-router` `Link` ignores `className` on native. Use `<Link href asChild>` around a `Pressable` with a styled `Text`.
+- Every user-facing string goes through `t()` from `react-i18next`. Add each key to both `src/shared/i18n/locales/en.json` and `tr.json`. The compiler rejects a missing Turkish key or an unknown key.
 - Comments explain why, never what.
 - Small, single-purpose commits. Conventional commit messages.
