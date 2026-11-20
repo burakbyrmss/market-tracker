@@ -1,4 +1,5 @@
 import '../global.css';
+import '@/shared/i18n';
 import '@/shared/ui/interop';
 
 import { Stack } from 'expo-router';
