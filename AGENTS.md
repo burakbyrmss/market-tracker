@@ -33,6 +33,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - `features/` never import `providers/*`. Go through the market-data service.
 - Parse external data (API, storage, deep links) with Zod once, in `providers/` or `shared/storage`. Inside, trust the types.
 - Asset and currency IDs are ours (`AssetId`, `CurrencyCode`), never provider symbols.
+- Live prices come from `useLiveQuote` (`src/services/market-data`). Only the market-data service opens sockets. A row reads only its own asset.
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
 - All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
 - Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Do not reimplement the rule.

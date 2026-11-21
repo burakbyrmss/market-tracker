@@ -13,7 +13,7 @@ A backend-free app calls providers directly from each device. A provider that ne
 
 - Define one crypto provider contract. It is described in [Market data providers](../architecture/providers.md).
 - Build two adapters: Binance is primary and Kraken is the fallback. Both are keyless and have public WebSockets.
-- At startup, the market-data service checks Binance. On HTTP 451 or a network failure it selects Kraken and stores the choice.
+- At startup, the market-data service checks Binance by fetching its snapshot. On any failure, including HTTP 451 and network errors, it selects Kraken and stores the choice. (Amended at M6: a provider that cannot return a snapshot cannot serve the session, whatever the reason.)
 - One provider serves the whole session. Prices never mix sources on one screen.
 - The UI always shows the active source.
 - Asset IDs belong to the app, such as `BTC`. Adapters map provider symbols to them.
