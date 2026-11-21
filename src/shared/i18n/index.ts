@@ -37,3 +37,12 @@ void i18n.use(initReactI18next).init({
 });
 
 export default i18n;
+
+// Names for the currencies the ECB publishes. Bundled rather than Intl.DisplayNames, which
+// Hermes may not support. An unknown code shows as itself.
+export type NamedCurrency = keyof Translation['currency'];
+
+// Returns the plain key, so it works in typed translation keys even for a branded code.
+export function namedCurrency(code: string): NamedCurrency | null {
+  return code in en.currency ? (code as NamedCurrency) : null;
+}

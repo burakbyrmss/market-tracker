@@ -31,5 +31,48 @@
     "source": "Kaynak: {{name}}",
     "rowLabel": "{{asset}}, {{price}}, {{change}}",
     "rowLabelNoChange": "{{asset}}, {{price}}"
+  },
+  "markets": {
+    "crypto": "Kripto",
+    "fx": "Döviz"
+  },
+  "fx": {
+    "ratesOf": "{{date}} tarihli ECB referans kurları",
+    "loading": "Kurlar yükleniyor…",
+    "unavailable": "Kurlar alınamadı. Bağlantınızı kontrol edin.",
+    "unit": "1 {{code}}",
+    "rowLabel": "1 {{code}}, {{name}}, {{value}}"
+  },
+  "currency": {
+    "AUD": "Avustralya doları",
+    "BRL": "Brezilya reali",
+    "CAD": "Kanada doları",
+    "CHF": "İsviçre frangı",
+    "CNY": "Çin yuanı",
+    "CZK": "Çek korunası",
+    "DKK": "Danimarka kronu",
+    "EUR": "Euro",
+    "GBP": "İngiliz sterlini",
+    "HKD": "Hong Kong doları",
+    "HUF": "Macar forinti",
+    "IDR": "Endonezya rupisi",
+    "ILS": "İsrail yeni şekeli",
+    "INR": "Hindistan rupisi",
+    "ISK": "İzlanda kronu",
+    "JPY": "Japon yeni",
+    "KRW": "Güney Kore wonu",
+    "MXN": "Meksika pesosu",
+    "MYR": "Malezya ringgiti",
+    "NOK": "Norveç kronu",
+    "NZD": "Yeni Zelanda doları",
+    "PHP": "Filipin pesosu",
+    "PLN": "Polonya zlotisi",
+    "RON": "Romen leyi",
+    "SEK": "İsveç kronu",
+    "SGD": "Singapur doları",
+    "THB": "Tayland bahtı",
+    "TRY": "Türk lirası",
+    "USD": "ABD doları",
+    "ZAR": "Güney Afrika randı"
   }
 }

@@ -36,3 +36,11 @@ export function formatFxRate(value: Decimal, locale: string): string {
     maximumFractionDigits: 4,
   }).format(toDisplayNumber(value));
 }
+
+// `isoDate` is a calendar date (YYYY-MM-DD), such as an ECB publication date. UTC keeps it from
+// shifting a day in time zones west of UTC.
+export function formatDate(isoDate: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
+    new Date(`${isoDate}T00:00:00Z`),
+  );
+}

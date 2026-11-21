@@ -54,13 +54,17 @@ Test data: `npm run record-fixtures` records trimmed responses with synthetic va
 
 ## Frankfurter (FX provider)
 
-| Fact                                                                     | Label       | Source                                                                                            |
-| ------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------- |
-| No API key is needed.                                                    | Confirmed   | [Frankfurter](https://frankfurter.dev/)                                                           |
-| The ECB source updates once per business day. It has no weekend rates.   | Confirmed   | [Frankfurter ECB provider](https://frankfurter.dev/providers/ecb/)                                |
-| ECB data includes TRY, with history back to 1999.                        | Inferred    | [Frankfurter ECB provider](https://frankfurter.dev/providers/ecb/)                                |
-| Blended v2 rates draw on many central banks. We use the ECB source only. | Confirmed   | [Frankfurter](https://frankfurter.dev/)                                                           |
-| ECB data terms                                                           | Not settled | [ECB disclaimer](https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html) |
+| Fact                                                                                                                                                                                              | Label       | Source                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| No API key is needed.                                                                                                                                                                             | Confirmed   | [Frankfurter](https://frankfurter.dev/)                                                           |
+| The ECB source updates once per business day. It has no weekend rates.                                                                                                                            | Confirmed   | [Frankfurter ECB provider](https://frankfurter.dev/providers/ecb/)                                |
+| ECB data includes TRY, with history back to 1999.                                                                                                                                                 | Inferred    | [Frankfurter ECB provider](https://frankfurter.dev/providers/ecb/)                                |
+| Blended v2 rates draw on many central banks. We use the ECB source only.                                                                                                                          | Confirmed   | [Frankfurter](https://frankfurter.dev/)                                                           |
+| `GET https://api.frankfurter.dev/v2/providers/ECB/rates` returns ECB rates only, as an array of `{date, base, quote, rate}`. `from`, `to`, `quotes`, and `group` (`week`, `month`) are supported. | Confirmed   | [Frankfurter v2 OpenAPI](https://api.frankfurter.dev/v2/openapi.json), live 2026-11-21            |
+| Rates are JSON numbers with at most 6 significant digits. The latest response includes the base (EUR at 1), which the adapter skips.                                                              | Confirmed   | Live response, 2026-11-21                                                                         |
+| Weekly grouped history can repeat a date (USD/TRY on 2025-05-14). The adapter keeps one point per date.                                                                                           | Confirmed   | Live response, 2026-11-21                                                                         |
+| The ECB publishes 30 currencies against EUR, including TRY. The app bundles English and Turkish names for each. `npm run smoke` fails if a new one appears.                                       | Confirmed   | [Frankfurter ECB provider](https://api.frankfurter.dev/v2/providers/ECB), live 2026-11-21         |
+| ECB data terms                                                                                                                                                                                    | Not settled | [ECB disclaimer](https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html) |
 
 ## Providers rejected
 

@@ -34,6 +34,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - `features/` never import `providers/*`. Go through the market-data service.
 - Parse external data (API, storage, deep links) with Zod once, in `providers/` or `shared/storage`. Inside, trust the types.
 - Asset and currency IDs are ours (`AssetId`, `CurrencyCode`), never provider symbols.
+- REST data goes through TanStack Query. Services export `queryOptions` (for example `fxQueries` in `src/services/fx`). Features call `useQuery` with them and never call a provider.
 - Live prices come from `useLiveQuote` (`src/services/market-data`). Only the market-data service opens sockets. A row reads only its own asset.
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
 - All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
@@ -68,6 +69,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas.
 - Register third-party components that take `className` in `src/shared/ui/interop.ts`.
 - `expo-router` `Link` ignores `className` on native. Use `<Link href asChild>` around a `Pressable` with a styled `Text`.
+- Edit files containing non-ASCII text (`₺`, Turkish strings) as UTF-8. On Windows, Python's default encoding is not UTF-8.
 - Every user-facing string goes through `t()` from `react-i18next`. Add each key to both `src/shared/i18n/locales/en.json` and `tr.json`. The compiler rejects a missing Turkish key or an unknown key.
 - Comments explain why, never what.
 - Small, single-purpose commits. Conventional commit messages.

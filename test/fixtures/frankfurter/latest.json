@@ -1,0 +1,32 @@
+[
+  {
+    "date": "2023-11-14",
+    "base": "EUR",
+    "quote": "EUR",
+    "rate": 1
+  },
+  {
+    "date": "2023-11-14",
+    "base": "EUR",
+    "quote": "GBP",
+    "rate": 0.85
+  },
+  {
+    "date": "2023-11-14",
+    "base": "EUR",
+    "quote": "JPY",
+    "rate": 160
+  },
+  {
+    "date": "2023-11-14",
+    "base": "EUR",
+    "quote": "TRY",
+    "rate": 44
+  },
+  {
+    "date": "2023-11-14",
+    "base": "EUR",
+    "quote": "USD",
+    "rate": 1.1
+  }
+]

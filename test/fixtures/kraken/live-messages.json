@@ -5,7 +5,7 @@
       "channel": "ticker",
       "event_trigger": "trades",
       "snapshot": true,
-      "symbol": "BTC/USD"
+      "symbol": "BTC/EUR"
     },
     "success": true,
     "time_in": "2023-11-14T22:13:20.000000Z",
@@ -17,7 +17,7 @@
       "channel": "ticker",
       "event_trigger": "trades",
       "snapshot": true,
-      "symbol": "ETH/USD"
+      "symbol": "BTC/USD"
     },
     "success": true,
     "time_in": "2023-11-14T22:13:20.000000Z",
@@ -41,7 +41,7 @@
       "channel": "ticker",
       "event_trigger": "trades",
       "snapshot": true,
-      "symbol": "BTC/EUR"
+      "symbol": "ETH/USD"
     },
     "success": true,
     "time_in": "2023-11-14T22:13:20.000000Z",
@@ -60,9 +60,53 @@
         "last": 46000,
         "volume": 1000,
         "vwap": 46000,
-        "low": 32199.999999999996,
-        "high": 50600.00000000001,
+        "low": 32200,
+        "high": 50600,
         "change": 9200,
+        "change_pct": 25,
+        "trades": 100,
+        "timestamp": "2023-11-14T22:13:20.000000Z"
+      }
+    ]
+  },
+  {
+    "channel": "ticker",
+    "type": "snapshot",
+    "data": [
+      {
+        "symbol": "BTC/USD",
+        "bid": 50000,
+        "bid_qty": 1,
+        "ask": 50000,
+        "ask_qty": 1,
+        "last": 50000,
+        "volume": 1000,
+        "vwap": 50000,
+        "low": 35000,
+        "high": 55000,
+        "change": 10000,
+        "change_pct": 25,
+        "trades": 100,
+        "timestamp": "2023-11-14T22:13:20.000000Z"
+      }
+    ]
+  },
+  {
+    "channel": "ticker",
+    "type": "snapshot",
+    "data": [
+      {
+        "symbol": "DOGE/USD",
+        "bid": 0.1,
+        "bid_qty": 1,
+        "ask": 0.1,
+        "ask_qty": 1,
+        "last": 0.1,
+        "volume": 1000,
+        "vwap": 0.1,
+        "low": 0.07,
+        "high": 0.11,
+        "change": 0.02,
         "change_pct": 25,
         "trades": 100,
         "timestamp": "2023-11-14T22:13:20.000000Z"
@@ -85,50 +129,6 @@
         "low": 1750,
         "high": 2750,
         "change": 500,
-        "change_pct": 25,
-        "trades": 100,
-        "timestamp": "2023-11-14T22:13:20.000000Z"
-      }
-    ]
-  },
-  {
-    "channel": "ticker",
-    "type": "snapshot",
-    "data": [
-      {
-        "symbol": "DOGE/USD",
-        "bid": 0.1,
-        "bid_qty": 1,
-        "ask": 0.1,
-        "ask_qty": 1,
-        "last": 0.1,
-        "volume": 1000,
-        "vwap": 0.1,
-        "low": 0.06999999999999999,
-        "high": 0.11000000000000001,
-        "change": 0.01999999999999999,
-        "change_pct": 25,
-        "trades": 100,
-        "timestamp": "2023-11-14T22:13:20.000000Z"
-      }
-    ]
-  },
-  {
-    "channel": "ticker",
-    "type": "snapshot",
-    "data": [
-      {
-        "symbol": "BTC/USD",
-        "bid": 50000,
-        "bid_qty": 1,
-        "ask": 50000,
-        "ask_qty": 1,
-        "last": 50000,
-        "volume": 1000,
-        "vwap": 50000,
-        "low": 35000,
-        "high": 55000.00000000001,
-        "change": 10000,
         "change_pct": 25,
         "trades": 100,
         "timestamp": "2023-11-14T22:13:20.000000Z"

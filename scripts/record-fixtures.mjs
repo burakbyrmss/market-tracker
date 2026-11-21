@@ -28,6 +28,11 @@ const KRAKEN_PAIRS = {
   XETHXXBT: 'ETH/BTC',
 };
 
+// Kraken returns object keys in a different order each call.
+function sortKeys(object) {
+  return Object.fromEntries(Object.entries(object).sort(([a], [b]) => a.localeCompare(b)));
+}
+
 async function get(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP ${response.status} from ${url}`);
@@ -54,7 +59,15 @@ async function recordBinance() {
   const symbols = Object.keys(BINANCE_PAIRS);
   const info = await get(`${BINANCE}/exchangeInfo?symbolStatus=TRADING&showPermissionSets=false`);
   info.serverTime = time;
-  info.symbols = info.symbols.filter((s) => symbols.includes(s.symbol));
+  info.symbols = info.symbols
+    .filter((s) => symbols.includes(s.symbol))
+    // MARKET_LOT_SIZE.maxQty follows recent trading volume, so it is market data too.
+    .map((s) => ({
+      ...s,
+      filters: s.filters.map((f) =>
+        f.filterType === 'MARKET_LOT_SIZE' ? { ...f, maxQty: fixed(baseVolume) } : f,
+      ),
+    }));
   if (info.symbols.length !== symbols.length) throw new Error('Binance: a fixture pair is missing');
   write('binance/exchangeInfo.json', info);
 
@@ -113,7 +126,7 @@ async function recordKraken() {
   const pairs = await get(`${KRAKEN}/AssetPairs?pair=${keys.join(',')}`);
   if (Object.keys(pairs.result).length !== keys.length)
     throw new Error('Kraken: a fixture pair is missing');
-  write('kraken/AssetPairs.json', pairs);
+  write('kraken/AssetPairs.json', { ...pairs, result: sortKeys(pairs.result) });
 
   const tickers = await get(`${KRAKEN}/Ticker?pair=${keys.join(',')}`);
   const result = {};
@@ -134,7 +147,7 @@ async function recordKraken() {
       o: fixed(open(pair), 5),
     };
   }
-  write('kraken/Ticker.json', { error: tickers.error, result });
+  write('kraken/Ticker.json', { error: tickers.error, result: sortKeys(result) });
 
   const ohlc = await get(`${KRAKEN}/OHLC?pair=XBTUSD&interval=${values.candleMinutes}`);
   const rows = ohlc.result.XXBTZUSD.slice(-values.candleCloses.length);
@@ -222,9 +235,20 @@ async function recordKrakenLive() {
       ) && kept.some((m) => m.channel === 'heartbeat'),
   });
   const iso = new Date(time).toISOString().replace('Z', '000Z');
+  // Messages arrive in a different order each run. A fixed order keeps re-recording diff-free:
+  // acks, then one ticker message per symbol, then one heartbeat.
+  const rank = (m) => (m.method ? 0 : m.channel === 'ticker' ? 1 : 2);
+  const key = (m) => m.result?.symbol ?? m.data?.[0]?.symbol ?? '';
+  const ordered = messages
+    .filter(
+      (m, i) =>
+        m.channel !== 'heartbeat' || messages.findIndex((x) => x.channel === 'heartbeat') === i,
+    )
+    .sort((a, b) => rank(a) - rank(b) || key(a).localeCompare(key(b)));
+  const round = (n) => Number(n.toFixed(5));
   write(
     'kraken/live-messages.json',
-    messages.map((message) => {
+    ordered.map((message) => {
       if (message.channel !== 'ticker')
         return message.method ? { ...message, time_in: iso, time_out: iso } : message;
       return {
@@ -240,9 +264,9 @@ async function recordKrakenLive() {
             last: price,
             volume: baseVolume,
             vwap: price,
-            low: price * 0.7,
-            high: price * 1.1,
-            change: price - open(d.symbol),
+            low: round(price * 0.7),
+            high: round(price * 1.1),
+            change: round(price - open(d.symbol)),
             change_pct: 25,
             trades: 100,
             timestamp: iso,
@@ -253,7 +277,36 @@ async function recordKrakenLive() {
   );
 }
 
+async function recordFrankfurter() {
+  const FX = 'https://api.frankfurter.dev/v2/providers/ECB';
+  const keep = Object.keys(values.fx.rates);
+  const latest = await get(`${FX}/rates?base=EUR`);
+  // Keep the EUR row too: the live response includes the base, and the adapter must skip it.
+  const kept = latest.filter((r) => keep.includes(r.quote) || r.quote === 'EUR');
+  if (kept.length !== keep.length + 1)
+    throw new Error('Frankfurter: a fixture currency is missing');
+  write(
+    'frankfurter/latest.json',
+    kept.map((r) => ({
+      ...r,
+      date: values.fx.date,
+      rate: r.quote === 'EUR' ? 1 : Number(values.fx.rates[r.quote]),
+    })),
+  );
+
+  const history = await get(`${FX}/rates?base=EUR&quotes=USD&from=2024-01-01&to=2024-01-10`);
+  write(
+    'frankfurter/history.json',
+    history.slice(0, values.fx.historyDates.length).map((r, i) => ({
+      ...r,
+      date: values.fx.historyDates[i],
+      rate: Number(values.fx.historyUsd[i]),
+    })),
+  );
+}
+
 await recordBinance();
 await recordKraken();
+await recordFrankfurter();
 await recordBinanceLive();
 await recordKrakenLive();
