@@ -9,6 +9,7 @@ import {
 } from '@/services/market-data/live-prices';
 
 const id = (raw: string) => raw as AssetId;
+const KRAKEN = { name: 'Kraken', quoteAsset: 'USD' } as const;
 
 const snapshot: MarketSnapshot = {
   source: 'kraken',
@@ -35,7 +36,7 @@ const update = (overrides: Partial<LiveUpdate>): LiveUpdate => ({
 afterEach(resetLivePrices);
 
 test('an update leaves other assets untouched, so their rows do not re-render', () => {
-  applySnapshot(snapshot, 'Kraken');
+  applySnapshot(snapshot, KRAKEN);
   const ethBefore = useLivePrices.getState().quotes.ETH;
 
   applyUpdates([update({})]);
@@ -46,16 +47,25 @@ test('an update leaves other assets untouched, so their rows do not re-render', 
 });
 
 test('keeps the last known change when an update has none', () => {
-  applySnapshot(snapshot, 'Kraken');
+  applySnapshot(snapshot, KRAKEN);
   applyUpdates([update({ change24hPct: 3 })]);
   applyUpdates([update({ change24hPct: null, price: decimal('102') })]);
   expect(useLivePrices.getState().quotes.BTC?.change24hPct).toBe(3);
 });
 
 test('direct fiat updates go to the direct price table', () => {
-  applySnapshot(snapshot, 'Kraken');
+  applySnapshot(snapshot, KRAKEN);
   applyUpdates([update({ quote: 'EUR' as never, price: decimal('93') })]);
-  const eur = useLivePrices.getState().directPrices.BTC?.EUR;
+  const eur = useLivePrices.getState().directPrices.BTC?.get('EUR' as never);
   expect(eur && toDecimalString(eur)).toBe('93');
   expect(toDecimalString(useLivePrices.getState().quotes.BTC!.price)).toBe('100');
+});
+
+test('a snapshot records its provider and quote asset', () => {
+  applySnapshot(snapshot, KRAKEN);
+  expect(useLivePrices.getState().source).toEqual({
+    id: 'kraken',
+    name: 'Kraken',
+    quoteAsset: 'USD',
+  });
 });

@@ -36,7 +36,7 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
 
   async function refreshSnapshot(current: CryptoProvider) {
     try {
-      applySnapshot(await current.snapshot(), current.name);
+      applySnapshot(await current.snapshot(), current);
     } catch {
       // Live updates continue. Old prices stay until they arrive.
     }
@@ -70,7 +70,7 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
         // stop() ran while this start was waiting.
         if (run !== generation) return;
         provider = selection.provider;
-        applySnapshot(selection.snapshot, provider.name);
+        applySnapshot(selection.snapshot, provider);
         connection = createLiveConnection({
           feed,
           onUpdates: applyUpdates,
