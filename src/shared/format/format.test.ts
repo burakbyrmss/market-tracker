@@ -1,7 +1,7 @@
 import type { CurrencyCode } from '@/domain/ids';
 import { decimal } from '@/domain/money';
 
-import { formatFxRate, formatPercentChange, formatPrice } from './index';
+import { formatDate, formatFxRate, formatPercentChange, formatPrice } from './index';
 
 const c = (code: string) => code as CurrencyCode;
 // Intl may use a no-break space between number and symbol. Normalize it so expectations stay readable.
@@ -45,5 +45,12 @@ describe('formatFxRate', () => {
   test('shows four decimals', () => {
     expect(norm(formatFxRate(decimal('35'), 'tr-TR'))).toBe('35,0000');
     expect(norm(formatFxRate(decimal('0.0272108'), 'en-US'))).toBe('0.0272');
+  });
+});
+
+describe('formatDate', () => {
+  test('formats a calendar date for the locale without shifting the day', () => {
+    expect(formatDate('2026-11-20', 'en-US')).toBe('Nov 20, 2026');
+    expect(formatDate('2026-11-20', 'tr-TR')).toBe('20 Kas 2026');
   });
 });
