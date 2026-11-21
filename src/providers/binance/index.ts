@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import type { AssetId, CurrencyCode } from '@/domain/ids';
-import type { ChartRange, PricePoint, Quote } from '@/domain/market';
+import type { ChartRange, LiveUpdate, PricePoint, Quote } from '@/domain/market';
 import { div, isPositive, mul, sub, toDisplayNumber, decimal, type Decimal } from '@/domain/money';
 
 import {
@@ -11,11 +11,16 @@ import {
   type ProviderOptions,
 } from '../contract';
 import { getJson, ProviderDataError } from '../http';
-import { buildPairTable, cachedPairTable, notListed, parseEach } from '../pairs';
+import { buildPairTable, cachedPairTable, notListed, parseEach, parseJson } from '../pairs';
 import { decimalString, numberString } from '../schemas';
 
 // Market-data-only host: public spot data, no API key (docs/architecture/providers.md).
 const BASE = 'https://data-api.binance.vision/api/v3';
+// Market-data-only WebSocket host. The all-market mini ticker sends every symbol that changed in
+// the last second (docs/architecture/providers.md).
+const LIVE_URL = 'wss://data-stream.binance.vision/ws/!miniTicker@arr';
+// Binance closes a connection at 24 hours. Reconnect an hour early.
+const LIVE_MAX_AGE = 23 * 60 * 60_000;
 
 const exchangeInfoSchema = z.object({
   symbols: z.array(
@@ -34,6 +39,14 @@ const miniTickerSchema = z.object({
   lastPrice: decimalString,
   quoteVolume: numberString,
   closeTime: z.number(),
+});
+
+const liveTickerSchema = z.object({
+  E: z.number(),
+  s: z.string(),
+  c: decimalString,
+  o: decimalString,
+  q: numberString,
 });
 
 const klineSchema = z
@@ -134,6 +147,34 @@ export function createBinanceProvider(options: ProviderOptions = {}): CryptoProv
         signal,
       );
       return klines.map(([time, , , , close]): PricePoint => ({ time, price: close }));
+    },
+
+    // The all-market stream covers every coin, so `assetIds` needs no subscription.
+    async liveFeed() {
+      const table = await pairTable();
+      return {
+        url: LIVE_URL,
+        subscribeMessages: [],
+        maxAgeMs: LIVE_MAX_AGE,
+        parse(message) {
+          const body = parseJson(message);
+          if (!Array.isArray(body)) return [];
+          const updates: LiveUpdate[] = [];
+          for (const ticker of parseEach(body, liveTickerSchema)) {
+            const pair = table.bySymbol.get(ticker.s);
+            if (!pair || !isPositive(ticker.c)) continue;
+            updates.push({
+              assetId: pair.assetId,
+              quote: pair.quote,
+              price: ticker.c,
+              change24hPct: changePct(ticker.o, ticker.c),
+              volume24h: ticker.q,
+              updatedAt: ticker.E,
+            });
+          }
+          return updates;
+        },
+      };
     },
   };
 }

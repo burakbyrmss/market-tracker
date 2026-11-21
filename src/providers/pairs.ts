@@ -90,3 +90,12 @@ export function parseEach<T>(items: readonly unknown[], schema: z.ZodType<T>): T
 export function notListed(provider: string, assetId: AssetId): ProviderDataError {
   return new ProviderDataError(`${provider} does not list ${assetId} against USD`);
 }
+
+// WebSocket messages arrive as text. A message that is not JSON is ignored, not thrown.
+export function parseJson(message: string): unknown {
+  try {
+    return JSON.parse(message) as unknown;
+  } catch {
+    return undefined;
+  }
+}

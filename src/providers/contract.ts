@@ -2,6 +2,7 @@ import type { AssetId } from '@/domain/ids';
 import type {
   ChartRange,
   ListedAsset,
+  LiveUpdate,
   MarketSnapshot,
   PricePoint,
   ProviderId,
@@ -9,7 +10,6 @@ import type {
 
 // Every crypto adapter implements this and passes the shared contract suite
 // (test/providers/contract-suite.ts). See docs/architecture/providers.md.
-// Live subscriptions join the contract in M6.
 export interface CryptoProvider {
   readonly id: ProviderId;
   // Shown in the UI as the data source.
@@ -20,7 +20,20 @@ export interface CryptoProvider {
   snapshot(signal?: AbortSignal): Promise<MarketSnapshot>;
   // Oldest point first. Rejects with ProviderDataError for an asset the provider does not list.
   history(assetId: AssetId, range: ChartRange, signal?: AbortSignal): Promise<PricePoint[]>;
+  // The WebSocket protocol for live prices of at least `assetIds`. The market-data service owns
+  // the socket itself: connecting, reconnecting, and closing.
+  liveFeed(assetIds: readonly AssetId[]): Promise<LiveFeed>;
 }
+
+export type LiveFeed = {
+  url: string;
+  // Messages to send once the socket opens.
+  subscribeMessages: string[];
+  // The provider closes connections older than this. The service reconnects before then.
+  maxAgeMs: number | null;
+  // Turns one message into updates. Messages without prices (heartbeats, acks) give [].
+  parse(message: string): LiveUpdate[];
+};
 
 export type ProviderOptions = {
   fetch?: typeof fetch;

@@ -39,3 +39,14 @@ export type PricePoint = {
   // Closing price of the candle.
   price: number;
 };
+
+// One live price change from the provider's WebSocket.
+export type LiveUpdate = {
+  assetId: AssetId;
+  // USD for the coin's main price, or a fiat currency for a direct pair.
+  quote: 'USD' | CurrencyCode;
+  price: Decimal;
+  change24hPct: number | null;
+  volume24h: number | null;
+  updatedAt: number;
+};

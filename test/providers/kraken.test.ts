@@ -5,6 +5,7 @@ import { createKrakenProvider } from '@/providers/kraken';
 import assetPairs from '../fixtures/kraken/AssetPairs.json';
 import ohlc from '../fixtures/kraken/OHLC.json';
 import ticker from '../fixtures/kraken/Ticker.json';
+import liveMessages from '../fixtures/kraken/live-messages.json';
 import values from '../fixtures/synthetic-values.json';
 import { describeProviderContract } from './contract-suite';
 import { fakeFetch } from './fake-fetch';
@@ -19,6 +20,7 @@ describeProviderContract('Kraken', {
   create: createKrakenProvider,
   routes,
   snapshotRoute: '/Ticker',
+  liveMessages: liveMessages.map((m) => JSON.stringify(m)),
   btcDirectFiat: ['EUR'],
 });
 
@@ -41,6 +43,15 @@ describe('Kraken adapter', () => {
     expect(params.get('pair')).toBe('XBTUSD');
     expect(params.get('interval')).toBe('5');
     expect(params.get('since')).toBe(String((values.time - 86_400_000) / 1000));
+  });
+
+  test('subscribes to the ticker by WebSocket v2 names, including direct fiat pairs', async () => {
+    const { provider } = make();
+    const feed = await provider.liveFeed(['BTC' as AssetId, 'NOPE' as AssetId]);
+    const symbols = feed.subscribeMessages.flatMap(
+      (m) => (JSON.parse(m) as { params: { symbol: string[] } }).params.symbol,
+    );
+    expect(symbols.sort()).toEqual(['BTC/EUR', 'BTC/USD']);
   });
 
   test('turns an error in the Kraken envelope into a data error', async () => {

@@ -4,6 +4,7 @@ import { createBinanceProvider } from '@/providers/binance';
 import exchangeInfo from '../fixtures/binance/exchangeInfo.json';
 import klines from '../fixtures/binance/klines.json';
 import tickers from '../fixtures/binance/ticker-24hr-mini.json';
+import liveTicker from '../fixtures/binance/live-miniTicker.json';
 import values from '../fixtures/synthetic-values.json';
 import { describeProviderContract } from './contract-suite';
 import { fakeFetch } from './fake-fetch';
@@ -18,6 +19,7 @@ describeProviderContract('Binance', {
   create: createBinanceProvider,
   routes,
   snapshotRoute: '/ticker/24hr',
+  liveMessages: [JSON.stringify(liveTicker)],
   btcDirectFiat: ['EUR', 'TRY'],
 });
 

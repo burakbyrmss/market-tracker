@@ -14,6 +14,8 @@ export type ContractCase = {
   snapshotRoute: string;
   // Fiat currencies the fixtures give BTC a direct pair in.
   btcDirectFiat: string[];
+  // Recorded WebSocket messages, as the socket delivers them.
+  liveMessages: string[];
 };
 
 const id = (raw: string) => raw as AssetId;
@@ -82,6 +84,28 @@ export function describeProviderContract(name: string, c: ContractCase) {
     test('rejects a response with an unexpected shape', async () => {
       const { provider } = make({ ...c.routes, [c.snapshotRoute]: { body: { surprise: true } } });
       await expect(provider.snapshot()).rejects.toBeInstanceOf(ProviderDataError);
+    });
+
+    test('live feed turns recorded messages into price updates', async () => {
+      const { provider } = make();
+      const feed = await provider.liveFeed([id('BTC'), id('ETH'), id('DOGE')]);
+      expect(feed.url).toMatch(/^wss:\/\//);
+      const updates = c.liveMessages.flatMap((message) => feed.parse(message));
+
+      const btcUsd = updates.find((u) => u.assetId === 'BTC' && u.quote === 'USD');
+      expect(btcUsd && toDecimalString(btcUsd.price)).toBe(values.prices['BTC/USD']);
+      expect(btcUsd?.change24hPct).toBe(25);
+      expect(btcUsd?.updatedAt).toBe(NOW);
+      const btcEur = updates.find((u) => u.assetId === 'BTC' && u.quote === 'EUR');
+      expect(btcEur && toDecimalString(btcEur.price)).toBe(values.prices['BTC/EUR']);
+    });
+
+    test('live feed ignores messages without prices', async () => {
+      const { provider } = make();
+      const feed = await provider.liveFeed([id('BTC')]);
+      expect(feed.parse('not json')).toEqual([]);
+      expect(feed.parse('{"channel":"heartbeat"}')).toEqual([]);
+      expect(feed.parse('[]')).toEqual([]);
     });
 
     test('fetches the asset list once for snapshot and history', async () => {

@@ -1,15 +1,26 @@
 import { z } from 'zod';
 
 import type { AssetId, CurrencyCode } from '@/domain/ids';
-import type { ChartRange, PricePoint, Quote } from '@/domain/market';
-import { isPositive, mul, toDisplayNumber, type Decimal } from '@/domain/money';
+import type { ChartRange, LiveUpdate, PricePoint, Quote } from '@/domain/market';
+import { decimal, isPositive, mul, toDisplayNumber, type Decimal } from '@/domain/money';
 
 import { RANGE_CANDLES, type CryptoProvider, type ProviderOptions } from '../contract';
 import { getJson, ProviderDataError, type Fetch } from '../http';
-import { buildPairTable, cachedPairTable, notListed, parseEach } from '../pairs';
+import {
+  buildPairTable,
+  cachedPairTable,
+  notListed,
+  parseEach,
+  parseJson,
+  type PairQuote,
+} from '../pairs';
 import { decimalString, numberString } from '../schemas';
 
 const BASE = 'https://api.kraken.com/0/public';
+const LIVE_URL = 'wss://ws.kraken.com/v2';
+// Kraken publishes no symbol cap for the ticker channel. Smaller messages keep each
+// subscription modest.
+const SUBSCRIBE_CHUNK = 100;
 
 // Kraken's REST names that differ from the common ticker (docs/architecture/providers.md).
 const KRAKEN_TO_COMMON: Record<string, string> = { XBT: 'BTC', XDG: 'DOGE' };
@@ -44,6 +55,23 @@ const tickerSchema = z.object({
   // [today, last 24 hours]
   v: z.tuple([z.string(), decimalString]),
   p: z.tuple([z.string(), decimalString]),
+});
+
+// WebSocket v2 sends numbers, not strings. A JSON number round-trips to the same decimal text
+// for up to 15 significant digits, which covers Kraken's price precision.
+const liveMessageSchema = z.object({
+  channel: z.literal('ticker'),
+  type: z.enum(['snapshot', 'update']),
+  data: z.array(z.unknown()),
+});
+
+const liveTickerSchema = z.object({
+  symbol: z.string(),
+  last: z.number().positive(),
+  change_pct: z.number(),
+  volume: z.number(),
+  vwap: z.number(),
+  timestamp: z.string(),
 });
 
 const ohlcSchema = z.array(
@@ -139,6 +167,55 @@ export function createKrakenProvider(options: ProviderOptions = {}): CryptoProvi
         time: time * 1000,
         price: close,
       }));
+    },
+
+    async liveFeed(assetIds) {
+      const table = await pairTable();
+      const fiatById = new Map(table.assets.map((a) => [a.id, a.directFiat]));
+      // WebSocket v2 names pairs by our common tickers (BTC/USD), unlike REST (XBT/USD).
+      const bySymbol = new Map<string, { assetId: AssetId; quote: PairQuote }>();
+      for (const assetId of assetIds) {
+        const fiat = fiatById.get(assetId);
+        if (!fiat) continue;
+        bySymbol.set(`${assetId}/USD`, { assetId, quote: 'USD' });
+        for (const currency of fiat)
+          bySymbol.set(`${assetId}/${currency}`, { assetId, quote: currency });
+      }
+      const symbols = [...bySymbol.keys()];
+      const subscribeMessages: string[] = [];
+      for (let i = 0; i < symbols.length; i += SUBSCRIBE_CHUNK) {
+        subscribeMessages.push(
+          JSON.stringify({
+            method: 'subscribe',
+            params: { channel: 'ticker', symbol: symbols.slice(i, i + SUBSCRIBE_CHUNK) },
+          }),
+        );
+      }
+
+      return {
+        url: LIVE_URL,
+        subscribeMessages,
+        maxAgeMs: null,
+        parse(message) {
+          const body = liveMessageSchema.safeParse(parseJson(message));
+          if (!body.success) return [];
+          const updates: LiveUpdate[] = [];
+          for (const ticker of parseEach(body.data.data, liveTickerSchema)) {
+            const pair = bySymbol.get(ticker.symbol);
+            const updatedAt = Date.parse(ticker.timestamp);
+            if (!pair || Number.isNaN(updatedAt)) continue;
+            updates.push({
+              assetId: pair.assetId,
+              quote: pair.quote,
+              price: decimal(ticker.last),
+              change24hPct: ticker.change_pct,
+              volume24h: ticker.volume * ticker.vwap,
+              updatedAt,
+            });
+          }
+          return updates;
+        },
+      };
     },
   };
 }
