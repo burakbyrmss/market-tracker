@@ -1,7 +1,6 @@
 {
   "home": {
-    "title": "Market Tracker",
-    "openSpike": "Open M2 performance spike",
+    "title": "Markets",
     "openSettings": "Settings"
   },
   "settings": {
@@ -23,12 +22,15 @@
       "USD": "US dollar (USD)",
       "EUR": "Euro (EUR)",
       "TRY": "Turkish lira (TRY)"
-    }
+    },
+    "openSpike": "Open M2 performance spike"
   },
   "market": {
     "loading": "Loading prices…",
     "unavailable": "Prices are unavailable. Check your connection.",
     "retry": "Try again",
-    "source": "Source: {{name}}"
+    "source": "Source: {{name}}",
+    "rowLabel": "{{asset}}, {{price}}, {{change}}",
+    "rowLabelNoChange": "{{asset}}, {{price}}"
   }
 }
