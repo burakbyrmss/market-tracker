@@ -22,8 +22,7 @@
       "USD": "ABD doları (USD)",
       "EUR": "Euro (EUR)",
       "TRY": "Türk lirası (TRY)"
-    },
-    "openSpike": "M2 performans testini aç"
+    }
   },
   "market": {
     "loading": "Fiyatlar yükleniyor…",

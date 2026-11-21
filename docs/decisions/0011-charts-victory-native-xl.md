@@ -1,6 +1,6 @@
 # 0011: Use Victory Native XL 42 for charts
 
-- **Status:** Provisional until the spike runs on a build that includes Skia
+- **Status:** Withdrawn on 2026-11-21. The chart library is chosen at M11 in a new ADR.
 - **Date:** 2026-11-19
 
 ## Context
@@ -40,6 +40,16 @@ Pass bar, set before the run: median of at least 55 fps on both threads for ever
 | Pending    | Android 12 device | EAS `preview` build                                          | Not measured yet                                                                                                                                                                     |
 
 No measurement exists yet. Expo Go cannot load Skia, so the spike needs a development or preview build made after PR #6. Until a run is recorded here, the version pin above stands and the performance question stays open. FlatList versus FlashList is also unmeasured, so the list choice above is a judgment call.
+
+## Withdrawal
+
+On 2026-11-21 the owner removed Skia, `victory-native`, and the M2 spike screen.
+
+- Every Android development build since Skia was added failed. EAS's free Android machine (4 vCPUs, 15.6 GB of RAM) lost its Gradle daemon while compiling Skia's debug C++. Limiting Gradle to one worker did not help: build `2a991291` failed with Skia compiling alone. Release builds with Skia passed (`e0fa01c1`).
+- The spike never produced a measurement, so nothing measured was lost.
+- M11 picks the chart library with a measured spike. Its pass bar adds one condition: Android development builds must still succeed on the EAS free tier.
+
+Lists: M7 uses FlashList 2, which was already installed, not FlatList as this ADR said. That choice is not measured either. The M16 low-end Android pass measures the market list.
 
 ## Sources
 

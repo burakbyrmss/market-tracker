@@ -16,7 +16,7 @@ This document explains how Market Tracker V1 is structured and why. Decisions be
 | FX data                   | Frankfurter, ECB source only                                                                 | [0005](../decisions/0005-fx-frankfurter-ecb.md)               |
 | Money arithmetic          | big.js 7 behind `src/domain/money.ts`                                                        | [0006](../decisions/0006-decimal-money-module.md)             |
 | Validation                | Zod, at boundaries only                                                                      | —                                                             |
-| Charts                    | Victory Native XL, provisional until M2                                                      | [0011](../decisions/0011-charts-victory-native-xl.md)         |
+| Charts                    | Not chosen. Picked at M11 with a measured spike. Victory Native XL was withdrawn.            | [0011](../decisions/0011-charts-victory-native-xl.md)         |
 | Translations              | i18next with typed keys, `expo-localization`, and `Intl.NumberFormat` in `src/shared/format` | —                                                             |
 | Styling                   | NativeWind 4 (Tailwind 3.4). Screens render inside `Screen`, which applies safe areas.       | [0014](../decisions/0014-nativewind-styling.md)               |
 | Crash reporting           | Sentry, crash reports only                                                                   | [0009](../decisions/0009-sentry-crash-only.md)                |
