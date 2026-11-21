@@ -9,14 +9,14 @@
       "distribution": "internal",
       "env": {
         "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a",
-        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx6g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process"
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=1 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
         "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a",
-        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx6g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process"
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=1 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process"
       }
     },
     "production": {
