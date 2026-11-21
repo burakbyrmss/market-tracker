@@ -13,7 +13,7 @@ Screens also ran under the status bar and the home indicator. The owner asked fo
 
 - Use NativeWind 4.2.7 with Tailwind CSS 3.4. Style every component with `className`.
 - Do not use `StyleSheet` or inline `style` objects. An ESLint rule bans `StyleSheet` imports from `react-native`.
-- Props that are not styles stay as props. Examples are Skia and Victory Native colors and stroke widths.
+- Props that are not styles stay as props. Examples are chart colors and stroke widths.
 - `src/shared/ui/screen.tsx` exports `Screen`, which wraps `SafeAreaView` from `react-native-safe-area-context`. Every route renders inside `Screen`.
 - The root stack hides the native header. Each screen owns its own top area inside `Screen`.
 - Register each third-party component that takes `className` with `cssInterop` in `src/shared/ui/interop.ts`, once.
