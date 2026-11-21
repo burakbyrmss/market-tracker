@@ -14,7 +14,9 @@
     "test": "jest",
     "doctor": "npx expo-doctor",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
-    "typegen": "node scripts/typegen.mjs"
+    "typegen": "node scripts/typegen.mjs",
+    "smoke": "jest --config jest.live.config.js",
+    "record-fixtures": "node scripts/record-fixtures.mjs"
   },
   "dependencies": {
     "@shopify/flash-list": "2.3.2",

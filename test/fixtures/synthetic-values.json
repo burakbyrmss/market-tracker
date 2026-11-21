@@ -1,0 +1,16 @@
+{
+  "note": "Values the fixture recorder writes in place of real market data (ADR 0012). Tests read the same file.",
+  "time": 1700000000000,
+  "openRatio": "0.8",
+  "baseVolume": "1000",
+  "prices": {
+    "BTC/USD": "50000",
+    "ETH/USD": "2500",
+    "DOGE/USD": "0.1",
+    "BTC/EUR": "46000",
+    "BTC/TRY": "2000000",
+    "ETH/BTC": "0.05"
+  },
+  "candleCloses": ["48000", "49000", "50000"],
+  "candleMinutes": 1440
+}
