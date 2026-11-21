@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { DISPLAY_CURRENCIES } from '@/domain/ids';
@@ -85,6 +86,12 @@ export function SettingsScreen() {
           onSelect={settings.setDisplayCurrency}
           optionLabel={(currency) => t(`settings.displayCurrency.${currency}`)}
         />
+        {/* M2 performance spike. Removed at M16 with the spike screen. */}
+        <Link href="/spike" asChild>
+          <Pressable className="items-center py-2">
+            <Text className="text-sm text-gray-500">{t('settings.openSpike')}</Text>
+          </Pressable>
+        </Link>
       </ScrollView>
     </Screen>
   );

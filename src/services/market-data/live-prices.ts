@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { rankTopCoins } from '@/domain/asset-classes';
+
 import type { AssetId } from '@/domain/ids';
 import type { LiveUpdate, MarketSnapshot, ProviderId } from '@/domain/market';
 import type { Decimal } from '@/domain/money';
@@ -18,9 +20,20 @@ type LivePricesState = {
   source: { id: ProviderId; name: string } | null;
   quotes: Readonly<Record<string, LiveQuote>>;
   directPrices: Readonly<Record<string, Readonly<Record<string, Decimal>>>>;
+  // The market list order. Set from each snapshot, not from live updates, so rows do not jump
+  // around every second.
+  ranking: readonly AssetId[];
 };
 
-const INITIAL: LivePricesState = { status: 'idle', source: null, quotes: {}, directPrices: {} };
+const INITIAL: LivePricesState = {
+  status: 'idle',
+  source: null,
+  quotes: {},
+  directPrices: {},
+  ranking: [],
+};
+
+export const RANKING_SIZE = 100;
 
 // One store, written by one WebSocket. Each row reads its own asset with useLiveQuote, so a
 // price change re-renders only that row (ADR 0003).
@@ -56,6 +69,7 @@ export function applySnapshot(snapshot: MarketSnapshot, sourceName: string) {
     source: { id: snapshot.source, name: sourceName },
     quotes,
     directPrices,
+    ranking: rankTopCoins(snapshot.quotes, RANKING_SIZE),
   });
 }
 

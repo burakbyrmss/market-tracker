@@ -30,7 +30,7 @@ The long-term product supports user accounts, portfolio management, transaction 
 
 ## How a coin is defined
 
-A coin is one row per asset, not one row per trading pair. Bitcoin appears once, as "Bitcoin", even though exchanges list `BTCUSDT`, `BTCEUR`, and other pairs. A coin appears only if the active provider lists an active pair against USD or USDT. Stablecoins are hidden from the top-100 list and stay searchable.
+A coin is one row per asset, not one row per trading pair. Bitcoin appears once, as "Bitcoin", even though exchanges list `BTCUSDT`, `BTCEUR`, and other pairs. A coin appears only if the active provider lists an active pair against USD or USDT. Stablecoins, fiat currencies listed as coins (such as EUR/USD), and tokenized stocks (such as Binance's NVDAB) are hidden from the top-100 list and stay searchable. The curated list lives in `src/domain/asset-classes.ts`. The ranking is set from each snapshot, so rows do not reorder with every live tick.
 
 ## Non-goals for V1
 

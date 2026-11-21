@@ -1,7 +1,6 @@
 {
   "home": {
-    "title": "Market Tracker",
-    "openSpike": "M2 performans testini aç",
+    "title": "Piyasalar",
     "openSettings": "Ayarlar"
   },
   "settings": {
@@ -23,12 +22,15 @@
       "USD": "ABD doları (USD)",
       "EUR": "Euro (EUR)",
       "TRY": "Türk lirası (TRY)"
-    }
+    },
+    "openSpike": "M2 performans testini aç"
   },
   "market": {
     "loading": "Fiyatlar yükleniyor…",
     "unavailable": "Fiyatlar alınamadı. Bağlantınızı kontrol edin.",
     "retry": "Tekrar dene",
-    "source": "Kaynak: {{name}}"
+    "source": "Kaynak: {{name}}",
+    "rowLabel": "{{asset}}, {{price}}, {{change}}",
+    "rowLabelNoChange": "{{asset}}, {{price}}"
   }
 }

@@ -1,9 +1,8 @@
-import type { AssetId } from '@/domain/ids';
-import type { Quote } from '@/domain/market';
+import { rankTopCoins } from '@/domain/asset-classes';
 import type { CryptoProvider } from '@/providers/contract';
 
 import { createLiveConnection, type LiveConnection, type SocketLike } from './live-connection';
-import { applySnapshot, applyUpdates, setMarketStatus } from './live-prices';
+import { applySnapshot, applyUpdates, RANKING_SIZE, setMarketStatus } from './live-prices';
 import { selectProvider } from './select-provider';
 
 export type AppStateLike = {
@@ -18,18 +17,9 @@ export type MarketDataOptions = {
   now?: () => number;
 };
 
-// Coins the live feed covers until M7 and M10 decide the list and watchlists.
-export const LIVE_ASSET_COUNT = 100;
 // After this long in the background, prices of quiet coins may be old, so resume refetches the
 // snapshot. Busy coins update within a second either way.
 export const REFRESH_AFTER_BACKGROUND_MS = 60_000;
-
-export function topByVolume(quotes: readonly Quote[], count: number): AssetId[] {
-  return [...quotes]
-    .sort((a, b) => b.volume24h - a.volume24h)
-    .slice(0, count)
-    .map((q) => q.assetId);
-}
 
 export type MarketDataService = {
   start(): Promise<void>;
@@ -73,8 +63,9 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
       setMarketStatus('loading');
       try {
         const selection = await selectProvider(options.providers);
+        // The live feed covers the market list. Watchlists join in M10.
         const feed = await selection.provider.liveFeed(
-          topByVolume(selection.snapshot.quotes, LIVE_ASSET_COUNT),
+          rankTopCoins(selection.snapshot.quotes, RANKING_SIZE),
         );
         // stop() ran while this start was waiting.
         if (run !== generation) return;

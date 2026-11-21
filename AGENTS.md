@@ -17,6 +17,7 @@ npm run check          # typecheck + lint + format check + tests (run before dec
 npm run doctor         # expo-doctor
 npm run smoke          # provider adapters against the live APIs (manual, not CI)
 npm run record-fixtures # re-record provider test data with synthetic values
+maestro test .maestro/  # end-to-end flows, against a preview build
 npx eas-cli@latest build --profile development --platform <ios|android>
 ```
 
@@ -51,6 +52,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 ## Testing
 
 - Test behavior through public interfaces. RNTL queries by role/text. No snapshot tests.
+- FlashList recycles views: assert what a row shows (its rank, its price), not the order of rows in the render tree.
 - Bug fixes start with a failing test. Every provider adapter passes the shared contract suite.
 - "Done" means shown on a real device, not "it compiles". See `docs/standards/definition-of-done.md`.
 

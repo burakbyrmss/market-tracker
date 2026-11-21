@@ -1,0 +1,17 @@
+# M7 exit check (docs/roadmap.md): launching the app shows the market list with prices.
+# Runs against a preview build, which bundles the JavaScript. A development build opens the
+# dev launcher instead of the app.
+#   maestro test .maestro/launch-shows-prices.yaml
+appId: com.utilizing.markettracker
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'crypto-row-BTC'
+    timeout: 30000
+- assertVisible:
+    id: 'price-BTC'
+- assertVisible:
+    id: 'crypto-row-ETH'
+- assertVisible: '(Source|Kaynak): (Binance|Kraken)'
