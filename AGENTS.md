@@ -15,6 +15,8 @@ npx expo install <pkg> # add a dependency (never plain npm install): picks SDK-c
 npm start              # start Metro for the development build
 npm run check          # typecheck + lint + format check + tests (run before declaring done)
 npm run doctor         # expo-doctor
+npm run smoke          # provider adapters against the live APIs (manual, not CI)
+npm run record-fixtures # re-record provider test data with synthetic values
 npx eas-cli@latest build --profile development --platform <ios|android>
 ```
 

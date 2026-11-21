@@ -10,40 +10,47 @@ Recheck a fact against the official source before you build on it. Update this f
 
 ## Crypto provider contract
 
-Every crypto adapter in `src/providers/` implements these capabilities. Every adapter passes the shared contract test suite.
+Every crypto adapter in `src/providers/` implements `CryptoProvider` (`src/providers/contract.ts`) and passes the shared contract suite in `test/providers/contract-suite.ts`.
 
-| Capability        | Returns                                                                           |
-| ----------------- | --------------------------------------------------------------------------------- |
-| List assets       | `CryptoAsset[]` keyed by `AssetId`. The adapter maps provider symbols to our IDs. |
-| Snapshot          | `Quote[]` with price, 24-hour change, and 24-hour volume                          |
-| Subscribe         | Live `Quote` updates for a set of assets, plus a function that unsubscribes       |
-| History           | `PricePoint[]` for a range                                                        |
-| Quote currency    | The currency the adapter's prices are in, such as USDT or USD                     |
-| Direct fiat pairs | The fiat currencies the adapter can price a coin in directly                      |
+| Capability   | Returns                                                                                                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `listAssets` | `ListedAsset[]`: coins with a USD or USDT pair, under our `AssetId`, each with its direct fiat pairs (EUR, TRY)                  |
+| `snapshot`   | `MarketSnapshot`: a `Quote` per coin (price as `Decimal`, rolling 24-hour change or null, 24-hour volume) and direct fiat prices |
+| `history`    | `PricePoint[]` for a chart range, oldest first. Candle sizes per range are shared (`RANGE_CANDLES`).                             |
+| `quoteAsset` | `USDT` (Binance) or `USD` (Kraken). The app treats USDT as USD.                                                                  |
+| Subscribe    | Live quote updates. Joins the contract in M6.                                                                                    |
+
+Errors: a non-2xx answer throws `ProviderHttpError` with its `status` (the service reads 451 to fall back). A response with an unexpected shape throws `ProviderDataError`. One malformed entry in a long list is skipped, but a snapshot with no USD prices at all is an error.
+
+Test data: `npm run record-fixtures` records trimmed responses with synthetic values (ADR 0012). `npm run smoke` runs the adapters against the live APIs. It is manual, not part of CI.
 
 ## Binance (primary crypto provider)
 
-| Fact                                                                                                                                        | Label       | Source                                                                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
-| Public market data uses `https://data-api.binance.vision` with no API key. It serves spot data only.                                        | Confirmed   | [Binance market data only URLs](https://developers.binance.com/docs/binance-spot-api-docs/faqs/market_data_only) |
-| A WebSocket connection lasts at most 24 hours. The server pings every 20 seconds and drops the connection without a pong within one minute. | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)        |
-| A client may send at most 5 messages per second on one connection.                                                                          | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)        |
-| The all-market mini-ticker stream `!miniTicker@arr` updates every 1000 ms.                                                                  | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)        |
-| Some locations get HTTP 451, including US IPs, even on public endpoints.                                                                    | Inferred    | [Forum report](https://dev.binance.vision/t/api-error-451-unavailable-for-legal-reasons/13828)                   |
-| Restricted locations include the US, Canada, and the Netherlands. The list changes.                                                         | Inferred    | [Datawallet](https://www.datawallet.com/crypto/binance-restricted-countries)                                     |
-| binance.com serves Türkiye. Lira trading moved to Binance TR, a separate company.                                                           | Inferred    | [Buy Bitcoin Smart](https://www.buybitcoinsmart.com/exchanges/binance-tr/turkey)                                 |
-| Whether a market-data-only WebSocket host exists                                                                                            | Assumption  | Verify at M6                                                                                                     |
-| Display of Binance data in a public third-party app is permitted                                                                            | Not settled | See [ADR 0007](../decisions/0007-data-licensing-release-gate.md)                                                 |
+| Fact                                                                                                                                                                                                      | Label       | Source                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Public market data uses `https://data-api.binance.vision` with no API key. It serves spot data only.                                                                                                      | Confirmed   | [Binance market data only URLs](https://developers.binance.com/docs/binance-spot-api-docs/faqs/market_data_only)          |
+| A WebSocket connection lasts at most 24 hours. The server pings every 20 seconds and drops the connection without a pong within one minute.                                                               | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)                 |
+| A client may send at most 5 messages per second on one connection.                                                                                                                                        | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)                 |
+| The all-market mini-ticker stream `!miniTicker@arr` updates every 1000 ms.                                                                                                                                | Confirmed   | [Binance WebSocket streams](https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams)                 |
+| Some locations get HTTP 451, including US IPs, even on public endpoints.                                                                                                                                  | Inferred    | [Forum report](https://dev.binance.vision/t/api-error-451-unavailable-for-legal-reasons/13828)                            |
+| Restricted locations include the US, Canada, and the Netherlands. The list changes.                                                                                                                       | Inferred    | [Datawallet](https://www.datawallet.com/crypto/binance-restricted-countries)                                              |
+| binance.com serves Türkiye. Lira trading moved to Binance TR, a separate company.                                                                                                                         | Inferred    | [Buy Bitcoin Smart](https://www.buybitcoinsmart.com/exchanges/binance-tr/turkey)                                          |
+| `exchangeInfo?symbolStatus=TRADING&showPermissionSets=false` is about 2.6 MB raw and 55 KB gzipped. `ticker/24hr?type=MINI` for all symbols is about 1 MB raw and 170 KB gzipped. Measured on 2026-11-21. | Confirmed   | Measured with curl                                                                                                        |
+| The `MINI` ticker has `openPrice` and `lastPrice` over a rolling 24 hours, but no `priceChangePercent`. The adapter computes the change.                                                                  | Confirmed   | [Binance market data endpoints](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints) |
+| Whether a market-data-only WebSocket host exists                                                                                                                                                          | Assumption  | Verify at M6                                                                                                              |
+| Display of Binance data in a public third-party app is permitted                                                                                                                                          | Not settled | See [ADR 0007](../decisions/0007-data-licensing-release-gate.md)                                                          |
 
 ## Kraken (fallback crypto provider)
 
-| Fact                                                                                                             | Label                | Source                                                                                                       |
-| ---------------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Public WebSocket v2 is at `wss://ws.kraken.com/v2` with no authentication. Channels include `ticker` and `ohlc`. | Confirmed            | [Kraken WebSocket v2](https://docs.kraken.com/websockets-v2)                                                 |
-| Public REST OHLC is at `GET /0/public/OHLC` with no authentication. Kraken suggests about one call per second.   | Confirmed            | [Kraken historical data](https://docs.kraken.com/exchange/guides/general/historical-data)                    |
-| Older REST endpoints use `XBT` for bitcoin.                                                                      | Inferred             | Verify at M5                                                                                                 |
-| Non-personal commercial use of public endpoints needs prior authorization. Contact is `marketdata@kraken.com`.   | Inferred, secondhand | [GitHub issue quoting Kraken](https://github.com/leandrosilveiradepaula/crypto-intelligence-agent/issues/48) |
-| Exact public rate limits                                                                                         | Assumption           | Verify at M5                                                                                                 |
+| Fact                                                                                                                                                              | Label                | Source                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Public WebSocket v2 is at `wss://ws.kraken.com/v2` with no authentication. Channels include `ticker` and `ohlc`.                                                  | Confirmed            | [Kraken WebSocket v2](https://docs.kraken.com/websockets-v2)                                                   |
+| Public REST OHLC is at `GET /0/public/OHLC` with no authentication. Kraken suggests about one call per second.                                                    | Confirmed            | [Kraken historical data](https://docs.kraken.com/exchange/guides/general/historical-data)                      |
+| REST uses `XBT` for bitcoin and `XDG` for dogecoin, in `wsname` (`XBT/USD`) and in result keys (`XXBTZUSD`, `XDGUSD`). The adapter maps them to `BTC` and `DOGE`. | Confirmed            | Live responses, 2026-11-21                                                                                     |
+| Ticker `o` is today's opening price at 00:00 UTC, not a rolling 24-hour open. REST has no rolling 24-hour change, so Kraken snapshots report the change as null.  | Confirmed            | [Get Ticker Information](https://docs.kraken.com/api/docs/rest-api/get-ticker-information/)                    |
+| OHLC returns at most the 720 most recent candles. Intervals are 1, 5, 15, 30, 60, 240, 1440, 10080, and 21600 minutes.                                            | Confirmed            | [Get OHLC Data](https://docs.kraken.com/api/docs/rest-api/get-ohlc-data)                                       |
+| Non-personal commercial use of public endpoints needs prior authorization. Contact is `marketdata@kraken.com`.                                                    | Inferred, secondhand | [GitHub issue quoting Kraken](https://github.com/leandrosilveiradepaula/crypto-intelligence-agent/issues/48)   |
+| Public endpoints are limited per IP. About one call per second stays within the limits. OHLC is also limited per pair. No exact number is published.              | Confirmed            | [Kraken support: API rate limits](https://support.kraken.com/articles/206548367-what-are-the-api-rate-limits-) |
 
 ## Frankfurter (FX provider)
 
