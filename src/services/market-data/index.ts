@@ -5,7 +5,15 @@ import { createKrakenProvider } from '@/providers/kraken';
 
 import { createMarketDataService } from './service';
 
-export { useLivePrices, useLiveQuote, type LiveQuote, type MarketStatus } from './live-prices';
+export {
+  useDirectPrices,
+  useLivePrices,
+  useLiveQuote,
+  type DirectPrices,
+  type LiveQuote,
+  type MarketSource,
+  type MarketStatus,
+} from './live-prices';
 export { lastProviderId } from './select-provider';
 
 // Binance first, Kraken as fallback (ADR 0004).
