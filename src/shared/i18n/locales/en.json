@@ -22,8 +22,7 @@
       "USD": "US dollar (USD)",
       "EUR": "Euro (EUR)",
       "TRY": "Turkish lira (TRY)"
-    },
-    "openSpike": "Open M2 performance spike"
+    }
   },
   "market": {
     "loading": "Loading prices…",
