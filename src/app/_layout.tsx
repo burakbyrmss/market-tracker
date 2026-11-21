@@ -6,12 +6,14 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { useMarketData } from '@/features/market/use-market-data';
 import { startSettings } from '@/features/settings/apply';
 
 startSettings();
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
+  useMarketData();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <GestureHandlerRootView className="flex-1">

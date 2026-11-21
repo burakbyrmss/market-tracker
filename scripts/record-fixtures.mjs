@@ -151,5 +151,109 @@ async function recordKraken() {
   });
 }
 
+// Collects WebSocket messages until `done` says enough, or fails after `ms`.
+function collect(url, { onOpen, keep, done, ms = 20_000 }) {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(url);
+    const kept = [];
+    const timer = setTimeout(() => {
+      ws.close();
+      reject(new Error(`Timed out collecting from ${url}`));
+    }, ms);
+    ws.onopen = () => onOpen?.(ws);
+    ws.onerror = () => reject(new Error(`WebSocket error from ${url}`));
+    ws.onmessage = (event) => {
+      const message = JSON.parse(String(event.data));
+      if (keep(message)) kept.push(message);
+      if (done(kept)) {
+        clearTimeout(timer);
+        ws.close();
+        resolve(kept);
+      }
+    };
+  });
+}
+
+async function recordBinanceLive() {
+  const wanted = Object.keys(BINANCE_PAIRS);
+  const seen = new Map();
+  // The stream sends only symbols that changed in the last second, so merge a few messages.
+  await collect('wss://data-stream.binance.vision/ws/!miniTicker@arr', {
+    keep: (message) => {
+      for (const t of message) if (wanted.includes(t.symbol ?? t.s)) seen.set(t.s, t);
+      return false;
+    },
+    done: () => seen.size === wanted.length,
+    ms: 60_000,
+  });
+  write(
+    'binance/live-miniTicker.json',
+    wanted.map((symbol) => {
+      const pair = BINANCE_PAIRS[symbol];
+      return {
+        ...seen.get(symbol),
+        E: time,
+        c: fixed(num(pair)),
+        o: fixed(open(pair)),
+        h: fixed(num(pair) * 1.1),
+        l: fixed(num(pair) * 0.7),
+        v: fixed(baseVolume),
+        q: fixed(num(pair) * baseVolume),
+      };
+    }),
+  );
+}
+
+async function recordKrakenLive() {
+  // WebSocket v2 names bitcoin BTC, unlike REST.
+  const symbols = ['BTC/USD', 'ETH/USD', 'DOGE/USD', 'BTC/EUR'];
+  const messages = await collect('wss://ws.kraken.com/v2', {
+    onOpen: (ws) =>
+      ws.send(
+        JSON.stringify({ method: 'subscribe', params: { channel: 'ticker', symbol: symbols } }),
+      ),
+    keep: (message) =>
+      message.channel === 'ticker' ||
+      message.channel === 'heartbeat' ||
+      message.method === 'subscribe',
+    done: (kept) =>
+      symbols.every((s) =>
+        kept.some((m) => m.channel === 'ticker' && m.data.some((d) => d.symbol === s)),
+      ) && kept.some((m) => m.channel === 'heartbeat'),
+  });
+  const iso = new Date(time).toISOString().replace('Z', '000Z');
+  write(
+    'kraken/live-messages.json',
+    messages.map((message) => {
+      if (message.channel !== 'ticker')
+        return message.method ? { ...message, time_in: iso, time_out: iso } : message;
+      return {
+        ...message,
+        data: message.data.map((d) => {
+          const price = num(d.symbol);
+          return {
+            ...d,
+            bid: price,
+            bid_qty: 1,
+            ask: price,
+            ask_qty: 1,
+            last: price,
+            volume: baseVolume,
+            vwap: price,
+            low: price * 0.7,
+            high: price * 1.1,
+            change: price - open(d.symbol),
+            change_pct: 25,
+            trades: 100,
+            timestamp: iso,
+          };
+        }),
+      };
+    }),
+  );
+}
+
 await recordBinance();
 await recordKraken();
+await recordBinanceLive();
+await recordKrakenLive();
