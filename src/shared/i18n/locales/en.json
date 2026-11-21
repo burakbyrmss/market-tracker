@@ -24,5 +24,11 @@
       "EUR": "Euro (EUR)",
       "TRY": "Turkish lira (TRY)"
     }
+  },
+  "market": {
+    "loading": "Loading prices…",
+    "unavailable": "Prices are unavailable. Check your connection.",
+    "retry": "Try again",
+    "source": "Source: {{name}}"
   }
 }

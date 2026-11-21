@@ -24,5 +24,11 @@
       "EUR": "Euro (EUR)",
       "TRY": "Türk lirası (TRY)"
     }
+  },
+  "market": {
+    "loading": "Fiyatlar yükleniyor…",
+    "unavailable": "Fiyatlar alınamadı. Bağlantınızı kontrol edin.",
+    "retry": "Tekrar dene",
+    "source": "Kaynak: {{name}}"
   }
 }
