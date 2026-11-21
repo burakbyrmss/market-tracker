@@ -27,3 +27,4 @@ Use the current Expo SDK with development builds from M1. EAS Build produces the
 - [react-native-mmkv README](https://raw.githubusercontent.com/mrousavy/react-native-mmkv/main/README.md)
 - [MMKV Expo configuration](https://deepwiki.com/mrousavy/react-native-mmkv/6.3-expo-configuration)
 - [Victory Native XL](https://github.com/FormidableLabs/victory-native-xl)
+- EAS's Android build machine has 4 vCPUs and 15.6 GB of RAM. Development and preview builds compile only `arm64-v8a`, and their `GRADLE_OPTS` in `eas.json` turn off parallel Gradle tasks, cap workers at 2, and run the Kotlin compiler in the Gradle process. Without these limits, Gradle was killed while compiling native code (Skia for x86 at M2; MMKV and Reanimated at M3 and M4). Production builds keep all architectures and may need the same limits.
