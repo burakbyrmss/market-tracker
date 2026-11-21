@@ -50,3 +50,7 @@ export type LiveUpdate = {
   volume24h: number | null;
   updatedAt: number;
 };
+
+// FX history is daily ECB data, so ranges start at a month (docs/product/requirements.md).
+export const FX_RANGES = ['1M', '1Y', '5Y'] as const;
+export type FxRange = (typeof FX_RANGES)[number];

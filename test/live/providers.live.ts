@@ -1,9 +1,12 @@
 import type { AssetId } from '@/domain/ids';
-import { CHART_RANGES } from '@/domain/market';
+import { CHART_RANGES, FX_RANGES } from '@/domain/market';
 import { isPositive } from '@/domain/money';
 import { createBinanceProvider } from '@/providers/binance';
 import type { CryptoProvider } from '@/providers/contract';
+import { createFrankfurterProvider } from '@/providers/frankfurter';
 import { createKrakenProvider } from '@/providers/kraken';
+// The JSON, not @/shared/i18n: plain Node cannot load expo-localization.
+import en from '@/shared/i18n/locales/en.json';
 
 const BTC = 'BTC' as AssetId;
 
@@ -41,4 +44,30 @@ describe.each<[string, () => CryptoProvider]>([
       expect(points.every((p) => p.price > 0)).toBe(true);
     },
   );
+});
+
+describe('Frankfurter live API', () => {
+  const fx = createFrankfurterProvider();
+
+  test('latest has USD and TRY per euro, dated within a week', async () => {
+    const rates = await fx.latest();
+    expect(rates.rates.has('USD' as never)).toBe(true);
+    expect(rates.rates.has('TRY' as never)).toBe(true);
+    expect(Date.now() - Date.parse(rates.date)).toBeLessThan(7 * 24 * 60 * 60_000);
+  });
+
+  test('every ECB currency has a bundled name', async () => {
+    const rates = await fx.latest();
+    const unnamed = [...rates.rates.keys(), rates.base].filter((code) => !(code in en.currency));
+    expect(unnamed).toEqual([]);
+  });
+
+  test.each(FX_RANGES)('history %s is ordered and positive', async (range) => {
+    const points = await fx.history('USD' as never, 'TRY' as never, range);
+    expect(points.length).toBeGreaterThan(10);
+    for (let i = 1; i < points.length; i++) {
+      expect(points[i]!.time).toBeGreaterThan(points[i - 1]!.time);
+    }
+    expect(points.every((p) => p.price > 0)).toBe(true);
+  });
 });
