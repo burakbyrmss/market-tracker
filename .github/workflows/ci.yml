@@ -34,8 +34,9 @@ jobs:
         run: npm audit --audit-level=high
 
   eas-development-build:
-    # Every update to main queues fresh development builds, so the binaries on the phones
-    # always match main's native dependencies (ADR 0001).
+    # Every update to main makes sure a development build exists for its native fingerprint, so
+    # the binaries on the phones always match main's native dependencies (ADR 0001). Changes that
+    # only touch JavaScript or docs reuse the existing build.
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -53,5 +54,5 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - run: npm ci
-      - name: Queue iOS and Android development builds
-        run: eas build --profile development --platform all --non-interactive --no-wait
+      - name: Queue development builds for changed native fingerprints
+        run: node scripts/eas-dev-build.mjs
