@@ -29,6 +29,8 @@ export const BACKOFF_CAP_MS = 60_000;
 export type LiveConnection = {
   start(): void;
   stop(): void;
+  // Sends messages now if the socket is open, and again after every reconnect.
+  send(messages: readonly string[]): void;
 };
 
 export function createLiveConnection(options: LiveConnectionOptions): LiveConnection {
@@ -38,6 +40,9 @@ export function createLiveConnection(options: LiveConnectionOptions): LiveConnec
   const random = options.random ?? Math.random;
 
   let socket: SocketLike | null = null;
+  // The socket once it has opened. Messages sent before then wait for onopen.
+  let openedSocket: SocketLike | null = null;
+  const added: string[] = [];
   let running = false;
   let attempt = 0;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -55,6 +60,7 @@ export function createLiveConnection(options: LiveConnectionOptions): LiveConnec
     if (!socket) return;
     const old = socket;
     socket = null;
+    openedSocket = null;
     old.onopen = old.onmessage = old.onclose = old.onerror = null;
     old.close();
   }
@@ -80,7 +86,8 @@ export function createLiveConnection(options: LiveConnectionOptions): LiveConnec
     socket = next;
 
     next.onopen = () => {
-      for (const message of feed.subscribeMessages) next.send(message);
+      openedSocket = next;
+      for (const message of [...feed.subscribeMessages, ...added]) next.send(message);
       if (feed.maxAgeMs !== null) {
         // A planned reconnect, not a failure, so it skips the backoff.
         ageTimer = setTimeout(() => {
@@ -114,6 +121,10 @@ export function createLiveConnection(options: LiveConnectionOptions): LiveConnec
       running = false;
       clearTimers();
       dropSocket();
+    },
+    send(messages) {
+      added.push(...messages);
+      if (openedSocket) for (const message of messages) openedSocket.send(message);
     },
   };
 }

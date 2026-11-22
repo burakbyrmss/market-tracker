@@ -54,6 +54,19 @@ describe('Kraken adapter', () => {
     expect(symbols.sort()).toEqual(['BTC/EUR', 'BTC/USD']);
   });
 
+  test('subscribes an added coin once, without repeating covered ones', async () => {
+    const { provider } = make();
+    const feed = await provider.liveFeed(['ETH' as AssetId]);
+    const symbols = (messages: string[]) =>
+      messages.flatMap((m) => (JSON.parse(m) as { params: { symbol: string[] } }).params.symbol);
+
+    expect(symbols(feed.addAssets(['BTC' as AssetId, 'ETH' as AssetId])).sort()).toEqual([
+      'BTC/EUR',
+      'BTC/USD',
+    ]);
+    expect(feed.addAssets(['BTC' as AssetId])).toEqual([]);
+  });
+
   test('turns an error in the Kraken envelope into a data error', async () => {
     const fake = fakeFetch({ ...routes, '/Ticker': { body: { error: ['EService:Unavailable'] } } });
     await expect(createKrakenProvider({ fetch: fake.fetch }).snapshot()).rejects.toBeInstanceOf(
