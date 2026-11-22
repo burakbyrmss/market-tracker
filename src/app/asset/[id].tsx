@@ -14,7 +14,7 @@ export default function AssetRoute() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: assetId ?? '' }} />
+      <Stack.Screen options={{ title: assetId ?? '' }} />
       {assetId ? (
         <AssetDetail assetId={assetId} />
       ) : (

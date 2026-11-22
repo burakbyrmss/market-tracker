@@ -7,7 +7,7 @@ export default function SettingsRoute() {
   const { t } = useTranslation();
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: t('settings.title') }} />
+      <Stack.Screen options={{ title: t('settings.title') }} />
       <SettingsScreen />
     </>
   );
