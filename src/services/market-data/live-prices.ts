@@ -29,6 +29,9 @@ type LivePricesState = {
   // The market list order. Set from each snapshot, not from live updates, so rows do not jump
   // around every second.
   ranking: readonly AssetId[];
+  // Every coin the provider lists, by volume, including the ones the ranking hides. Search
+  // covers these. Like the ranking, it changes only with a snapshot.
+  listed: readonly AssetId[];
 };
 
 const INITIAL: LivePricesState = {
@@ -37,6 +40,7 @@ const INITIAL: LivePricesState = {
   quotes: {},
   directPrices: {},
   ranking: [],
+  listed: [],
 };
 
 export const RANKING_SIZE = 100;
@@ -84,6 +88,9 @@ export function applySnapshot(
     quotes,
     directPrices,
     ranking: rankTopCoins(snapshot.quotes, RANKING_SIZE),
+    listed: [...snapshot.quotes]
+      .sort((a, b) => b.volume24h - a.volume24h)
+      .map((quote) => quote.assetId),
   });
 }
 
