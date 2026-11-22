@@ -1,0 +1,29 @@
+# M10 exit check (docs/roadmap.md): search, add to the watchlist, relaunch, and the item is
+# still there. Runs against a preview build. Text patterns accept English and Turkish.
+#   maestro test .maestro/watchlist.yaml
+appId: com.utilizing.markettracker
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'crypto-row-BTC'
+    timeout: 30000
+- tapOn: 'Search|Ara'
+- inputText: 'eth'
+- tapOn:
+    id: 'watch-crypto-ETH'
+- eraseText
+- inputText: 'try'
+- tapOn:
+    id: 'watch-fx-TRY'
+- stopApp
+- launchApp:
+    clearState: false
+- tapOn: 'Watchlist|İzleme listesi'
+- extendedWaitUntil:
+    visible:
+      id: 'price-ETH'
+    timeout: 30000
+- assertVisible:
+    id: 'fx-row-TRY'
