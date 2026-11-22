@@ -1,0 +1,145 @@
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+
+import type { DisplayPrice } from '@/domain/conversion';
+import { displayCurrencyCode, type AssetId, type DisplayCurrency } from '@/domain/ids';
+import { useSettings } from '@/features/settings/store';
+import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
+import { useLivePrices, type MarketSource } from '@/services/market-data';
+import { formatDate, formatFxRate, formatPercentChange, formatPrice } from '@/shared/format';
+import { useFormatLocale } from '@/shared/i18n';
+import { Screen } from '@/shared/ui/screen';
+
+import { formatDisplayPrice, useDisplayPrice } from './display-price';
+
+function Message({ title, text }: { title: string; text: string }) {
+  return (
+    <Screen title={title}>
+      <View className="flex-1 items-center justify-center px-8">
+        <Text className="text-center text-base text-gray-500">{text}</Text>
+      </View>
+    </Screen>
+  );
+}
+
+// Requirement 7 (docs/product/requirements.md): the detail screen says which method and which
+// sources produced the price.
+function PriceMethod({
+  assetId,
+  currency,
+  price,
+  source,
+}: {
+  assetId: AssetId;
+  currency: DisplayCurrency;
+  price: DisplayPrice;
+  source: MarketSource;
+}) {
+  const { t } = useTranslation();
+  const locale = useFormatLocale();
+  const base = { asset: assetId, quote: source.quoteAsset, source: source.name };
+  const usdtNote = source.quoteAsset === 'USDT' ? [t('detail.usdtAsUsd')] : [];
+
+  let lines: string[];
+  switch (price.method) {
+    case 'usd':
+      lines = [t('detail.usd', base), ...usdtNote];
+      break;
+    case 'direct':
+      lines = [t('detail.direct', { ...base, currency: price.currency })];
+      break;
+    case 'fx':
+      lines = [
+        t('detail.fxBase', {
+          ...base,
+          price: formatPrice(price.usdPrice, displayCurrencyCode('USD'), locale),
+        }),
+        t('detail.fxRate', {
+          currency: currency,
+          rate: formatFxRate(price.rate, locale),
+          fxSource: FX_SOURCE_NAME,
+          date: formatDate(price.fxDate, locale),
+        }),
+        ...usdtNote,
+      ];
+      break;
+    case 'unavailable':
+      lines = [
+        price.reason === 'no-usd-price'
+          ? t('detail.noUsdPrice', base)
+          : t('detail.noFxRate', { currency: currency }),
+      ];
+      break;
+  }
+
+  return (
+    <View testID="price-method" className="gap-2 rounded-xl bg-gray-100 p-4 dark:bg-gray-900">
+      <Text accessibilityRole="header" className="text-sm font-semibold uppercase text-gray-500">
+        {t('detail.method')}
+      </Text>
+      {lines.map((line) => (
+        <Text key={line} className="text-base text-black dark:text-white">
+          {line}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+export function AssetDetail({ assetId }: { assetId: AssetId }) {
+  const { t } = useTranslation();
+  const locale = useFormatLocale();
+  const currency = useSettings((state) => state.displayCurrency);
+  const fx = useQuery(fxQueries.latest()).data ?? null;
+  const status = useLivePrices((state) => state.status);
+  const source = useLivePrices((state) => state.source);
+  const { quote, display } = useDisplayPrice(assetId, currency, fx);
+
+  if (!source) {
+    return (
+      <Message
+        title={assetId}
+        text={t(status === 'error' ? 'market.unavailable' : 'market.loading')}
+      />
+    );
+  }
+  if (!quote) {
+    return (
+      <Message
+        title={assetId}
+        text={t('detail.notListed', { asset: assetId, source: source.name })}
+      />
+    );
+  }
+
+  const price = formatDisplayPrice(display, currency, locale);
+  const change = quote.change24hPct;
+
+  return (
+    <Screen title={assetId}>
+      <ScrollView contentContainerClassName="gap-6 p-4">
+        <View className="gap-1">
+          <Text
+            testID="detail-price"
+            accessibilityLabel={price ?? t('market.priceUnavailable')}
+            className="text-4xl font-bold tabular-nums text-black dark:text-white"
+          >
+            {price ?? '–'}
+          </Text>
+          <Text className="text-base text-gray-500">
+            {t('detail.change24h')}:{' '}
+            <Text
+              className={`tabular-nums ${
+                change === null ? 'text-gray-500' : change < 0 ? 'text-red-600' : 'text-green-600'
+              }`}
+            >
+              {change === null ? '–' : formatPercentChange(change, locale)}
+            </Text>
+          </Text>
+        </View>
+        <PriceMethod assetId={assetId} currency={currency} price={display} source={source} />
+      </ScrollView>
+    </Screen>
+  );
+}

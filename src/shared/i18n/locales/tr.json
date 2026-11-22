@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Geri"
+  },
   "home": {
     "title": "Piyasalar",
     "openSettings": "Ayarlar"
@@ -30,7 +33,9 @@
     "retry": "Tekrar dene",
     "source": "Kaynak: {{name}}",
     "rowLabel": "{{asset}}, {{price}}, {{change}}",
-    "rowLabelNoChange": "{{asset}}, {{price}}"
+    "rowLabelNoChange": "{{asset}}, {{price}}",
+    "priceUnavailable": "fiyat yok",
+    "sources": "Kaynaklar: {{crypto}}, {{fx}}"
   },
   "markets": {
     "crypto": "Kripto",
@@ -42,6 +47,19 @@
     "unavailable": "Kurlar alınamadı. Bağlantınızı kontrol edin.",
     "unit": "1 {{code}}",
     "rowLabel": "1 {{code}}, {{name}}, {{value}}"
+  },
+  "detail": {
+    "change24h": "24 saatlik değişim",
+    "method": "Bu fiyat nasıl hesaplanır",
+    "usd": "{{source}} üzerindeki {{asset}}/{{quote}} fiyatı.",
+    "usdtAsUsd": "Uygulama 1 USDT’yi 1 USD sayar.",
+    "direct": "{{source}} üzerindeki doğrudan {{asset}}/{{currency}} fiyatı.",
+    "fxBase": "{{source}} üzerindeki {{asset}}/{{quote}} fiyatı: {{price}}",
+    "fxRate": "× {{fxSource}} USD/{{currency}} kuru {{rate}}, {{date}}",
+    "noUsdPrice": "{{source}} üzerinde {{asset}} için USD fiyatı yok.",
+    "noFxRate": "USD/{{currency}} kuru henüz yüklenmedi.",
+    "notListed": "{{asset}}, {{source}} üzerinde listelenmiyor.",
+    "notFound": "Bu varlık bulunamadı."
   },
   "currency": {
     "AUD": "Avustralya doları",

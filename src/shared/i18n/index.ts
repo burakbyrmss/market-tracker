@@ -1,6 +1,6 @@
 import { getLocales } from 'expo-localization';
 import { createInstance } from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
 
 import en from './locales/en.json';
 import trJson from './locales/tr.json';
@@ -15,6 +15,12 @@ export type Language = (typeof LANGUAGES)[number];
 
 // Number and currency formatting follows the app language.
 export const FORMAT_LOCALE: Record<Language, string> = { en: 'en-US', tr: 'tr-TR' };
+
+// Re-renders on a language change, so formatted numbers follow the app language.
+export function useFormatLocale(): string {
+  const { i18n: instance } = useTranslation();
+  return FORMAT_LOCALE[instance.language === 'tr' ? 'tr' : 'en'];
+}
 
 export function deviceLanguage(): Language {
   return getLocales()[0]?.languageCode === 'tr' ? 'tr' : 'en';

@@ -27,6 +27,12 @@ afterEach(async () => {
 });
 
 describe('settings screen', () => {
+  test('shows its title in a header with a back button', async () => {
+    await render(<SettingsScreen />);
+    expect(screen.getByRole('header', { name: 'Settings' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Back' })).toBeOnTheScreen();
+  });
+
   test('switches the app to Turkish when Türkçe is chosen', async () => {
     await render(<SettingsScreen />);
 

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Back"
+  },
   "home": {
     "title": "Markets",
     "openSettings": "Settings"
@@ -30,7 +33,9 @@
     "retry": "Try again",
     "source": "Source: {{name}}",
     "rowLabel": "{{asset}}, {{price}}, {{change}}",
-    "rowLabelNoChange": "{{asset}}, {{price}}"
+    "rowLabelNoChange": "{{asset}}, {{price}}",
+    "priceUnavailable": "price unavailable",
+    "sources": "Sources: {{crypto}}, {{fx}}"
   },
   "markets": {
     "crypto": "Crypto",
@@ -42,6 +47,19 @@
     "unavailable": "Rates are unavailable. Check your connection.",
     "unit": "1 {{code}}",
     "rowLabel": "1 {{code}}, {{name}}, {{value}}"
+  },
+  "detail": {
+    "change24h": "24h change",
+    "method": "How this price is made",
+    "usd": "{{asset}}/{{quote}} price on {{source}}.",
+    "usdtAsUsd": "The app counts 1 USDT as 1 USD.",
+    "direct": "Direct {{asset}}/{{currency}} price on {{source}}.",
+    "fxBase": "{{asset}}/{{quote}} price on {{source}}: {{price}}",
+    "fxRate": "× USD/{{currency}} rate {{rate}} from {{fxSource}}, {{date}}",
+    "noUsdPrice": "{{source}} has no USD price for {{asset}}.",
+    "noFxRate": "The USD/{{currency}} rate has not loaded yet.",
+    "notListed": "{{asset}} is not listed on {{source}}.",
+    "notFound": "This asset does not exist."
   },
   "currency": {
     "AUD": "Australian dollar",

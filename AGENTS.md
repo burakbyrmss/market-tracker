@@ -26,6 +26,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Expo SDK 58. Expo changes every SDK. Read `https://docs.expo.dev/versions/v58.0.0/` for the API you touch. Do not trust memory.
 - `ios/` and `android/` are generated. Never create or edit them. Configure native behavior in `app.json` and config plugins.
 - Expo Go is not supported. A new native dependency needs a new development build.
+- Typed routes are generated into `.expo/types` (not committed) by `npm start`. After adding a route, start Metro once or `tsc` rejects links to it.
 - Routes live in `src/app/`. Tests live in `test/` or next to source as `*.test.ts(x)`, never in `src/app/`.
 
 ## Architecture rules
@@ -38,7 +39,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Live prices come from `useLiveQuote` (`src/services/market-data`). Only the market-data service opens sockets. A row reads only its own asset.
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
 - All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
-- Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Do not reimplement the rule.
+- Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Features use `useDisplayPrice` and `formatDisplayPrice` (`src/features/market/display-price.ts`), which apply it. Do not reimplement the rule.
 - Persisted Zustand stores use `persistOptions` from `src/shared/storage` with a Zod schema. A change to a persisted shape bumps `version` and adds a `migrate`.
 - Settings (theme, language, display currency) live in `useSettings` (`src/features/settings/store.ts`). Change them through the store, never by calling `i18n.changeLanguage` or `colorScheme.set` directly.
 - Format prices, percentages, and rates with `src/shared/format`. Never call `toFixed` on a price for display.
@@ -66,7 +67,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 ## Style
 
 - Strict TS: no `any`, no `@ts-ignore`, no lint suppressions.
-- Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas.
+- Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas. A screen below the markets list passes `title` to `Screen` for its header and back button. Do not turn on the native stack header: it covered screen content on device.
 - Register third-party components that take `className` in `src/shared/ui/interop.ts`.
 - `expo-router` `Link` ignores `className` on native. Use `<Link href asChild>` around a `Pressable` with a styled `Text`.
 - Edit files containing non-ASCII text (`₺`, Turkish strings) as UTF-8. On Windows, Python's default encoding is not UTF-8.

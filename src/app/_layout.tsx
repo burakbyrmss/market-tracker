@@ -20,7 +20,8 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <GestureHandlerRootView className="flex-1">
-          <Stack screenOptions={{ headerShown: false, headerBackButtonDisplayMode: 'minimal' }} />
+          {/* Screens draw their own header through Screen's `title`. */}
+          <Stack screenOptions={{ headerShown: false }} />
         </GestureHandlerRootView>
       </ThemeProvider>
     </QueryClientProvider>
