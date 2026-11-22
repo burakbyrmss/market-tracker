@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Back"
+  },
   "home": {
     "title": "Markets",
     "openSettings": "Settings"

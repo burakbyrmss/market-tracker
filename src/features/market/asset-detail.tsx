@@ -13,9 +13,9 @@ import { Screen } from '@/shared/ui/screen';
 
 import { formatDisplayPrice, useDisplayPrice } from './display-price';
 
-function Message({ text }: { text: string }) {
+function Message({ title, text }: { title: string; text: string }) {
   return (
-    <Screen edges={['bottom', 'left', 'right']}>
+    <Screen title={title}>
       <View className="flex-1 items-center justify-center px-8">
         <Text className="text-center text-base text-gray-500">{text}</Text>
       </View>
@@ -97,17 +97,27 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
   const { quote, display } = useDisplayPrice(assetId, currency, fx);
 
   if (!source) {
-    return <Message text={t(status === 'error' ? 'market.unavailable' : 'market.loading')} />;
+    return (
+      <Message
+        title={assetId}
+        text={t(status === 'error' ? 'market.unavailable' : 'market.loading')}
+      />
+    );
   }
   if (!quote) {
-    return <Message text={t('detail.notListed', { asset: assetId, source: source.name })} />;
+    return (
+      <Message
+        title={assetId}
+        text={t('detail.notListed', { asset: assetId, source: source.name })}
+      />
+    );
   }
 
   const price = formatDisplayPrice(display, currency, locale);
   const change = quote.change24hPct;
 
   return (
-    <Screen edges={['bottom', 'left', 'right']}>
+    <Screen title={assetId}>
       <ScrollView contentContainerClassName="gap-6 p-4">
         <View className="gap-1">
           <Text

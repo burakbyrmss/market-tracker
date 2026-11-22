@@ -20,12 +20,8 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <GestureHandlerRootView className="flex-1">
-          {/* Headers are set here, before a screen mounts. Turning one on from inside a screen
-              changes it after the content is laid out, and the header then covered the top of
-              Settings. */}
-          <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-          </Stack>
+          {/* Screens draw their own header through Screen's `title`. */}
+          <Stack screenOptions={{ headerShown: false }} />
         </GestureHandlerRootView>
       </ThemeProvider>
     </QueryClientProvider>

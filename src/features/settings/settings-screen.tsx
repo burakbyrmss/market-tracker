@@ -62,7 +62,7 @@ export function SettingsScreen() {
   const settings = useSettings();
 
   return (
-    <Screen edges={['bottom', 'left', 'right']}>
+    <Screen title={t('settings.title')}>
       <ScrollView contentContainerClassName="gap-8 p-4">
         <OptionGroup
           label={t('settings.theme.label')}

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Geri"
+  },
   "home": {
     "title": "Piyasalar",
     "openSettings": "Ayarlar"

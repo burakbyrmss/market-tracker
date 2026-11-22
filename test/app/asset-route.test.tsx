@@ -34,3 +34,24 @@ test('a deep link with an invalid asset ID shows not found', async () => {
   await renderRouter(routes, { wrapper, initialUrl: '/asset/not-a-coin' });
   expect(screen.getByText('This asset does not exist.')).toBeOnTheScreen();
 });
+
+test('the detail screen has a titled header whose back button returns to the list', async () => {
+  goLive();
+  await renderRouter(routes, { wrapper });
+  await fireEvent.press(screen.getByTestId('crypto-row-ETH'));
+
+  expect(screen.getByRole('header', { name: 'ETH' })).toBeOnTheScreen();
+  await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+
+  expect(screen).toHavePathname('/');
+});
+
+test('back from a deep-linked detail screen goes to the markets list', async () => {
+  goLive();
+  await renderRouter(routes, { wrapper, initialUrl: '/asset/BTC' });
+
+  await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByRole('header', { name: 'Markets' })).toBeOnTheScreen();
+});
