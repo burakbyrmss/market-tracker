@@ -4,7 +4,8 @@
   },
   "home": {
     "title": "Markets",
-    "openSettings": "Settings"
+    "openSettings": "Settings",
+    "openSearch": "Search"
   },
   "settings": {
     "title": "Settings",
@@ -39,7 +40,26 @@
   },
   "markets": {
     "crypto": "Crypto",
-    "fx": "FX"
+    "fx": "FX",
+    "watchlist": "Watchlist"
+  },
+  "search": {
+    "title": "Search",
+    "label": "Search coins and currencies",
+    "placeholder": "BTC, euro, TRY…",
+    "hint": "Type a ticker, a currency code, or a currency name.",
+    "noMatches": "No matches."
+  },
+  "watchlist": {
+    "add": "Add {{name}} to watchlist",
+    "remove": "Remove {{name}} from watchlist",
+    "empty": "Your watchlist is empty. Find coins and currencies in Search.",
+    "edit": "Edit",
+    "done": "Done",
+    "moveUp": "Move {{name}} up",
+    "moveDown": "Move {{name}} down",
+    "delete": "Remove {{name}}",
+    "unavailable": "Unavailable from {{source}}"
   },
   "fx": {
     "ratesOf": "ECB reference rates of {{date}}",

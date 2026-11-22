@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 
 import AssetRoute from '@/app/asset/[id]';
 import MarketsScreen from '@/app/index';
+import SearchRoute from '@/app/search';
+import { EMPTY_WATCHLISTS, useWatchlists } from '@/features/watchlist/store';
 import { resetLivePrices } from '@/services/market-data/live-prices';
 
 import { goLive } from '../market-fixtures';
@@ -17,7 +19,10 @@ function wrapper({ children }: { children: ReactNode }) {
 
 const routes = { index: MarketsScreen, 'asset/[id]': AssetRoute };
 
-afterEach(() => resetLivePrices());
+afterEach(() => {
+  resetLivePrices();
+  useWatchlists.setState(EMPTY_WATCHLISTS);
+});
 
 test('tapping a coin opens its detail screen', async () => {
   goLive();
@@ -54,4 +59,17 @@ test('back from a deep-linked detail screen goes to the markets list', async () 
 
   expect(screen).toHavePathname('/');
   expect(screen.getByRole('header', { name: 'Markets' })).toBeOnTheScreen();
+});
+
+test('a coin starred in search shows in the watchlist', async () => {
+  goLive();
+  await renderRouter({ ...routes, search: SearchRoute }, { wrapper });
+
+  await fireEvent.press(screen.getByRole('link', { name: 'Search' }));
+  await fireEvent.changeText(screen.getByLabelText('Search coins and currencies'), 'doge');
+  await fireEvent.press(screen.getByRole('button', { name: 'Add DOGE to watchlist' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+  await fireEvent.press(screen.getByRole('tab', { name: 'Watchlist' }));
+
+  expect(screen.getByTestId('price-DOGE')).toHaveTextContent('$0.10');
 });
