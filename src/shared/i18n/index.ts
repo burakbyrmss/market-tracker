@@ -1,5 +1,6 @@
 import { getLocales } from 'expo-localization';
 import { createInstance } from 'i18next';
+import { useCallback } from 'react';
 import { initReactI18next, useTranslation } from 'react-i18next';
 
 import en from './locales/en.json';
@@ -51,4 +52,17 @@ export type NamedCurrency = keyof Translation['currency'];
 // Returns the plain key, so it works in typed translation keys even for a branded code.
 export function namedCurrency(code: string): NamedCurrency | null {
   return code in en.currency ? (code as NamedCurrency) : null;
+}
+
+// The translated currency name, or the code when the app has no name for it.
+export function useCurrencyName(): (code: string) => string {
+  const { t } = useTranslation();
+  // Stable until the language changes, so callers can memoize on it.
+  return useCallback(
+    (code: string) => {
+      const named = namedCurrency(code);
+      return named ? t(`currency.${named}`) : code;
+    },
+    [t],
+  );
 }
