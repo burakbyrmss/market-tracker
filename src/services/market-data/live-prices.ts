@@ -32,6 +32,11 @@ type LivePricesState = {
   // Every coin the provider lists, by volume, including the ones the ranking hides. Search
   // covers these. Like the ranking, it changes only with a snapshot.
   listed: readonly AssetId[];
+  // When the prices on screen last arrived from the network. Saved prices keep their own time,
+  // so the app can say how old they are.
+  asOf: number | null;
+  // Whether prices are arriving now. False while the socket reconnects and for saved prices.
+  connected: boolean;
 };
 
 const INITIAL: LivePricesState = {
@@ -41,6 +46,8 @@ const INITIAL: LivePricesState = {
   directPrices: {},
   ranking: [],
   listed: [],
+  asOf: null,
+  connected: false,
 };
 
 export const RANKING_SIZE = 100;
@@ -68,9 +75,14 @@ export function setMarketStatus(status: MarketStatus) {
   useLivePrices.setState({ status });
 }
 
+export function setConnected(connected: boolean) {
+  useLivePrices.setState({ connected });
+}
+
 export function applySnapshot(
   snapshot: MarketSnapshot,
   provider: { name: string; quoteAsset: 'USD' | 'USDT' },
+  receivedAt: number = Date.now(),
 ) {
   const quotes: Record<string, LiveQuote> = {};
   for (const quote of snapshot.quotes) {
@@ -91,11 +103,13 @@ export function applySnapshot(
     listed: [...snapshot.quotes]
       .sort((a, b) => b.volume24h - a.volume24h)
       .map((quote) => quote.assetId),
+    asOf: receivedAt,
+    connected: true,
   });
 }
 
 // Only changed assets get new objects. Unchanged rows keep their reference and skip re-render.
-export function applyUpdates(updates: readonly LiveUpdate[]) {
+export function applyUpdates(updates: readonly LiveUpdate[], receivedAt: number = Date.now()) {
   const { quotes, directPrices } = useLivePrices.getState();
   const nextQuotes = { ...quotes };
   let nextDirect: Record<string, DirectPrices> | null = null;
@@ -118,5 +132,10 @@ export function applyUpdates(updates: readonly LiveUpdate[]) {
       );
     }
   }
-  useLivePrices.setState({ quotes: nextQuotes, directPrices: nextDirect ?? directPrices });
+  useLivePrices.setState({
+    quotes: nextQuotes,
+    directPrices: nextDirect ?? directPrices,
+    asOf: receivedAt,
+    connected: true,
+  });
 }

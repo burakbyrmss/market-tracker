@@ -14,6 +14,8 @@ export type SocketLike = {
 export type LiveConnectionOptions = {
   feed: LiveFeed;
   onUpdates: (updates: LiveUpdate[]) => void;
+  // The connection failed and will retry. Prices on screen stop updating until a message arrives.
+  onDisconnect?: () => void;
   openSocket?: (url: string) => SocketLike;
   random?: () => number;
 };
@@ -74,6 +76,7 @@ export function createLiveConnection(options: LiveConnectionOptions): LiveConnec
     clearTimers();
     dropSocket();
     if (!running) return;
+    options.onDisconnect?.();
     const delay = random() * Math.min(BACKOFF_CAP_MS, BACKOFF_BASE_MS * 2 ** attempt);
     attempt += 1;
     reconnectTimer = setTimeout(connect, delay);

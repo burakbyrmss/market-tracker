@@ -5,6 +5,7 @@ import type { CryptoProvider } from '@/providers/contract';
 import { ProviderHttpError } from '@/providers/http';
 import { lastProviderId } from '@/services/market-data';
 import { resetLivePrices, useLivePrices } from '@/services/market-data/live-prices';
+import { savedPrices } from '@/services/market-data/saved-prices';
 import {
   createMarketDataService,
   REFRESH_AFTER_BACKGROUND_MS,
@@ -80,6 +81,7 @@ function setup(
     openSocket: sockets.open,
     random: () => 1,
     now: () => now,
+    cache: savedPrices,
   });
   return { service, sockets, app, binance, kraken, advance: (ms: number) => (now += ms) };
 }
@@ -191,5 +193,79 @@ test('a coin watched while live is added to the open socket, without reconnectin
 
   expect(sockets.sockets).toHaveLength(1);
   expect(sockets.latest().sent).toEqual(['subscribe BTC', 'add SOL']);
+  service.stop();
+});
+
+const offline = (): Promise<MarketSnapshot> =>
+  Promise.reject(new TypeError('Network request failed'));
+// Lets a start that no test awaits, such as one from a return to the foreground, finish.
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+test('a start without a network shows the last saved prices with their time', async () => {
+  const online = setup();
+  online.advance(1_000);
+  await online.service.start();
+  online.service.stop();
+  resetLivePrices();
+
+  const { service } = setup(fakeProvider('binance', offline), fakeProvider('kraken', offline));
+  await service.start();
+
+  const state = useLivePrices.getState();
+  expect(state.status).toBe('error');
+  expect(state.source?.name).toBe('Binance');
+  expect(btcPrice()).toBe('50000');
+  expect(state.asOf).toBe(1_000);
+  expect(state.connected).toBe(false);
+  service.stop();
+});
+
+test('live prices are saved when the app goes to the background', async () => {
+  const { service, sockets, app, advance } = setup();
+  await service.start();
+  advance(5_000);
+  sockets.latest().serverSends('50500');
+  app.moveTo('background');
+  service.stop();
+  resetLivePrices();
+
+  savedPrices.restore();
+  expect(btcPrice()).toBe('50500');
+  expect(useLivePrices.getState().asOf).toBe(5_000);
+});
+
+test('a dropped socket marks prices as not arriving until the next message', async () => {
+  const { service, sockets } = setup();
+  await service.start();
+  expect(useLivePrices.getState().connected).toBe(true);
+
+  sockets.latest().networkDrops();
+  expect(useLivePrices.getState().connected).toBe(false);
+  service.stop();
+});
+
+test('a failed start is retried when the app returns to the foreground', async () => {
+  let network = offline;
+  const { service, app, sockets } = setup(
+    fakeProvider('binance', () => network()),
+    fakeProvider('kraken', offline),
+  );
+  await service.start();
+  expect(useLivePrices.getState().status).toBe('error');
+
+  network = async () => snapshot('binance', '50000');
+  app.moveTo('active');
+  await settle();
+
+  expect(useLivePrices.getState().status).toBe('live');
+  expect(sockets.sockets).toHaveLength(1);
+  service.stop();
+});
+
+test('two starts at once select a provider once', async () => {
+  const { service, binance, sockets } = setup();
+  await Promise.all([service.start(), service.start()]);
+  expect(binance.snapshot).toHaveBeenCalledTimes(1);
+  expect(sockets.sockets).toHaveLength(1);
   service.stop();
 });
