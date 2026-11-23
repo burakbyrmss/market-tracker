@@ -1,7 +1,7 @@
 import { focusManager, QueryClient } from '@tanstack/react-query';
 import { AppState } from 'react-native';
 
-// TanStack Query owns REST data (ADR 0003). The cache persists to MMKV in M13.
+// TanStack Query owns REST data (ADR 0003). The cache persists to MMKV through persist.ts.
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 2 },
