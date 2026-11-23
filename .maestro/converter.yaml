@@ -1,0 +1,29 @@
+# M12 exit check (docs/roadmap.md): the converter turns an amount of one unit into another.
+# Runs against a preview build. Text patterns accept English and Turkish.
+#   maestro test .maestro/converter.yaml
+appId: com.utilizing.markettracker
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'crypto-row-BTC'
+    timeout: 30000
+- tapOn: 'Convert|Çevir'
+- tapOn:
+    id: 'converter-amount'
+- eraseText
+- inputText: '2'
+- tapOn:
+    id: 'converter-to'
+- inputText: 'eth'
+- tapOn:
+    id: 'unit-crypto-ETH'
+- assertVisible:
+    id: 'converter-result'
+    text: '.*ETH'
+- tapOn:
+    id: 'converter-swap'
+- assertVisible:
+    id: 'converter-result'
+    text: '.*BTC'
