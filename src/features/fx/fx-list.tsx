@@ -1,5 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -28,21 +29,22 @@ export function FxRateRow({
   const value = rate ? formatPrice(rate, display, locale) : '–';
 
   return (
-    <View
-      accessible
-      accessibilityLabel={t('fx.rowLabel', { code, name, value })}
-      testID={`fx-row-${code}`}
-      className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 dark:border-gray-800"
-    >
-      <LetterAvatar label={code} />
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-black dark:text-white">
-          {t('fx.unit', { code })}
-        </Text>
-        <Text className="text-sm text-gray-500">{name}</Text>
-      </View>
-      <Text className="text-base tabular-nums text-black dark:text-white">{value}</Text>
-    </View>
+    <Link href={{ pathname: '/fx/[code]', params: { code } }} asChild>
+      <Pressable
+        accessibilityLabel={t('fx.rowLabel', { code, name, value })}
+        testID={`fx-row-${code}`}
+        className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
+      >
+        <LetterAvatar label={code} />
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-black dark:text-white">
+            {t('fx.unit', { code })}
+          </Text>
+          <Text className="text-sm text-gray-500">{name}</Text>
+        </View>
+        <Text className="text-base tabular-nums text-black dark:text-white">{value}</Text>
+      </Pressable>
+    </Link>
   );
 }
 

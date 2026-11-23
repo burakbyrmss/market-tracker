@@ -81,6 +81,34 @@
     "notListed": "{{asset}} is not listed on {{source}}.",
     "notFound": "This asset does not exist."
   },
+  "chart": {
+    "loading": "Loading chart…",
+    "unavailable": "The chart could not load.",
+    "empty": "No chart data for this range.",
+    "summary": "{{range}} chart from {{first}} to {{last}}. High {{high}}, low {{low}}.",
+    "change": "{{change}} over {{range}}",
+    "pair": "Chart: {{pair}} on {{source}}",
+    "range": {
+      "1D": "1D",
+      "1W": "1W",
+      "1M": "1M",
+      "1Y": "1Y",
+      "ALL": "All",
+      "5Y": "5Y"
+    },
+    "rangeName": {
+      "1D": "1 day",
+      "1W": "1 week",
+      "1M": "1 month",
+      "1Y": "1 year",
+      "ALL": "all time",
+      "5Y": "5 years"
+    }
+  },
+  "fxDetail": {
+    "rateOf": "ECB reference rate of {{date}}",
+    "notListed": "{{code}} is not in the ECB reference rates."
+  },
   "currency": {
     "AUD": "Australian dollar",
     "BRL": "Brazilian real",
