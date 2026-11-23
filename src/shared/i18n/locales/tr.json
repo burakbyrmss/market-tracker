@@ -5,7 +5,8 @@
   "home": {
     "title": "Piyasalar",
     "openSettings": "Ayarlar",
-    "openSearch": "Ara"
+    "openSearch": "Ara",
+    "openConverter": "Çevir"
   },
   "settings": {
     "title": "Ayarlar",
@@ -60,6 +61,24 @@
     "moveDown": "Aşağı taşı: {{name}}",
     "delete": "Kaldır: {{name}}",
     "unavailable": "{{source}} üzerinde yok"
+  },
+  "converter": {
+    "title": "Çevir",
+    "amount": "Tutar",
+    "invalid": "1,5 gibi bir sayı girin.",
+    "from": "Kaynak",
+    "to": "Hedef",
+    "swap": "Yer değiştir",
+    "pick": "Para birimi seçin",
+    "pickTitle": "Seç",
+    "searchLabel": "Coin ve para birimi ara",
+    "unavailable": "Bu çift için henüz fiyat yok.",
+    "rate": "1 {{from}} = {{rate}}",
+    "direct": "{{source}} üzerindeki doğrudan {{pair}} fiyatı kullanılır.",
+    "usdFx": "{{source}} üzerindeki {{coin}} fiyatı ve ECB USD kuru kullanılır.",
+    "cross": "{{source}} üzerindeki iki coin fiyatı karşılaştırılır.",
+    "crypto": "Kripto",
+    "fiat": "Para birimi"
   },
   "fx": {
     "ratesOf": "{{date}} tarihli ECB referans kurları",
