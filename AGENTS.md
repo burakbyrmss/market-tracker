@@ -43,6 +43,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Features use `useDisplayPrice` and `formatDisplayPrice` (`src/features/market/display-price.ts`), which apply it. Do not reimplement the rule.
 - Persisted Zustand stores use `persistOptions` from `src/shared/storage` with a Zod schema. A change to a persisted shape bumps `version` and adds a `migrate`.
 - Settings (theme, language, display currency) live in `useSettings` (`src/features/settings/store.ts`). Change them through the store, never by calling `i18n.changeLanguage` or `colorScheme.set` directly.
+- Charts use `ChartSection` (`src/features/chart`) with `react-native-svg` (ADR 0015). A coin chart plots the provider's own pair, never history converted at today's FX rate.
 - Format prices, percentages, and rates with `src/shared/format`. Never call `toFixed` on a price for display.
 - No new dependency without a reason in the PR. Architectural changes need an ADR in `docs/decisions/`.
 

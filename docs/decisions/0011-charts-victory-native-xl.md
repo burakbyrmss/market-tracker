@@ -1,6 +1,6 @@
 # 0011: Use Victory Native XL 42 for charts
 
-- **Status:** Withdrawn on 2026-11-21. The chart library is chosen at M11 in a new ADR.
+- **Status:** Withdrawn on 2026-11-21. Charts are chosen in [ADR 0015](0015-charts-react-native-svg.md).
 - **Date:** 2026-11-19
 
 ## Context
