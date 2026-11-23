@@ -1,7 +1,8 @@
-import { screen, within } from '@testing-library/react-native';
+import { fireEvent, screen, within } from '@testing-library/react-native';
 
 import { AssetDetail } from '@/features/market/asset-detail';
 import { DEFAULT_SETTINGS, useSettings } from '@/features/settings/store';
+import { cryptoQueries } from '@/services/market-data';
 import { resetLivePrices, setMarketStatus } from '@/services/market-data/live-prices';
 import i18n from '@/shared/i18n';
 
@@ -75,4 +76,23 @@ test('waits for prices before the first snapshot', async () => {
   setMarketStatus('loading');
   await renderWithQuery(<AssetDetail assetId={asset('BTC')} />);
   expect(screen.getByText('Loading prices…')).toBeOnTheScreen();
+});
+
+test('charts the provider pair, and a range tab switches the chart', async () => {
+  goLive();
+  await renderWithQuery(<AssetDetail assetId={asset('BTC')} />, undefined, (client) => {
+    const history = (range: '1D' | '1W', prices: number[]) =>
+      client.setQueryData(
+        cryptoQueries.history('binance', asset('BTC'), range).queryKey,
+        prices.map((price, index) => ({ time: index * 60_000, price })),
+      );
+    history('1D', [40000, 50000]);
+    history('1W', [25000, 50000]);
+  });
+
+  expect(screen.getByText('Chart: BTC/USDT on Binance')).toBeOnTheScreen();
+  expect(screen.getByTestId('chart-caption')).toHaveTextContent('+25.00% over 1 day');
+
+  await fireEvent.press(screen.getByRole('tab', { name: '1 week' }));
+  expect(screen.getByTestId('chart-caption')).toHaveTextContent('+100.00% over 1 week');
 });
