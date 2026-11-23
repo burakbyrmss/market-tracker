@@ -1,0 +1,24 @@
+# M11 exit check (docs/roadmap.md): open a detail screen and switch the chart range.
+# Runs against a preview build.
+#   maestro test .maestro/asset-detail-chart.yaml
+appId: com.utilizing.markettracker
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'crypto-row-BTC'
+    timeout: 30000
+- tapOn:
+    id: 'crypto-row-BTC'
+- extendedWaitUntil:
+    visible:
+      id: 'price-chart'
+    timeout: 30000
+- tapOn:
+    id: 'chart-range-1Y'
+- extendedWaitUntil:
+    visible:
+      id: 'price-chart'
+    timeout: 30000
+- assertVisible: '.*(over 1 year|1 yıl içinde).*'
