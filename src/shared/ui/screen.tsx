@@ -11,9 +11,11 @@ type ScreenProps = {
   // Shows a header with a back button. The app draws its own headers, not the native stack's:
   // the native header covered the top of screen content on device.
   title?: string;
+  // Replaces the router's back, for a screen shown in a modal.
+  onBack?: () => void;
 };
 
-function ScreenHeader({ title }: { title: string }) {
+function ScreenHeader({ title, onBack }: { title: string; onBack?: () => void }) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
@@ -23,7 +25,11 @@ function ScreenHeader({ title }: { title: string }) {
         accessibilityLabel={t('common.back')}
         hitSlop={8}
         // A deep link opens a screen with nothing behind it, so back goes to the markets list.
-        onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        onPress={() => {
+          if (onBack) onBack();
+          else if (router.canGoBack()) router.back();
+          else router.replace('/');
+        }}
         className="h-11 w-11 items-center justify-center"
       >
         <Text className="text-3xl leading-9 text-blue-600">‹</Text>
@@ -41,13 +47,13 @@ function ScreenHeader({ title }: { title: string }) {
 }
 
 // Every screen renders inside Screen so content never runs under the status bar, notch, or home indicator.
-export function Screen({ children, className, edges, title }: ScreenProps) {
+export function Screen({ children, className, edges, title, onBack }: ScreenProps) {
   return (
     <SafeAreaView
       className={`flex-1 bg-white dark:bg-black ${className ?? ''}`}
       {...(edges ? { edges } : {})}
     >
-      {title !== undefined && <ScreenHeader title={title} />}
+      {title !== undefined && <ScreenHeader title={title} {...(onBack ? { onBack } : {})} />}
       {children}
     </SafeAreaView>
   );
