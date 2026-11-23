@@ -4,7 +4,8 @@
   },
   "home": {
     "title": "Piyasalar",
-    "openSettings": "Ayarlar"
+    "openSettings": "Ayarlar",
+    "openSearch": "Ara"
   },
   "settings": {
     "title": "Ayarlar",
@@ -39,7 +40,26 @@
   },
   "markets": {
     "crypto": "Kripto",
-    "fx": "Döviz"
+    "fx": "Döviz",
+    "watchlist": "İzleme listesi"
+  },
+  "search": {
+    "title": "Ara",
+    "label": "Coin ve para birimi ara",
+    "placeholder": "BTC, euro, TRY…",
+    "hint": "Bir sembol, para birimi kodu veya para birimi adı yazın.",
+    "noMatches": "Sonuç yok."
+  },
+  "watchlist": {
+    "add": "İzleme listesine ekle: {{name}}",
+    "remove": "İzleme listesinden çıkar: {{name}}",
+    "empty": "İzleme listeniz boş. Coin ve para birimlerini Ara ekranında bulun.",
+    "edit": "Düzenle",
+    "done": "Bitti",
+    "moveUp": "Yukarı taşı: {{name}}",
+    "moveDown": "Aşağı taşı: {{name}}",
+    "delete": "Kaldır: {{name}}",
+    "unavailable": "{{source}} üzerinde yok"
   },
   "fx": {
     "ratesOf": "{{date}} tarihli ECB referans kurları",

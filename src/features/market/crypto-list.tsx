@@ -18,13 +18,14 @@ import { formatDisplayPrice, useDisplayPrice } from './display-price';
 
 type CryptoRowProps = {
   assetId: AssetId;
-  rank: number;
+  // The market list shows ranks. A watchlist has its own order and shows none.
+  rank?: number;
   currency: DisplayCurrency;
   fx: FxRates | null;
 };
 
 // Reads only its own asset, so a price change re-renders one row (ADR 0003).
-const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }: CryptoRowProps) {
+export const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }: CryptoRowProps) {
   const { t } = useTranslation();
   const locale = useFormatLocale();
   const { quote, display } = useDisplayPrice(assetId, currency, fx);
@@ -46,7 +47,7 @@ const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }: Crypt
         testID={`crypto-row-${assetId}`}
         className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
       >
-        <Text className="w-7 text-right text-xs text-gray-500">{rank}</Text>
+        {rank !== undefined && <Text className="w-7 text-right text-xs text-gray-500">{rank}</Text>}
         <LetterAvatar label={assetId} />
         <Text className="flex-1 text-base font-semibold text-black dark:text-white">{assetId}</Text>
         <View className="items-end">

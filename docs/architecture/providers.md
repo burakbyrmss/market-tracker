@@ -12,13 +12,13 @@ Recheck a fact against the official source before you build on it. Update this f
 
 Every crypto adapter in `src/providers/` implements `CryptoProvider` (`src/providers/contract.ts`) and passes the shared contract suite in `test/providers/contract-suite.ts`.
 
-| Capability   | Returns                                                                                                                          |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `listAssets` | `ListedAsset[]`: coins with a USD or USDT pair, under our `AssetId`, each with its direct fiat pairs (EUR, TRY)                  |
-| `snapshot`   | `MarketSnapshot`: a `Quote` per coin (price as `Decimal`, rolling 24-hour change or null, 24-hour volume) and direct fiat prices |
-| `history`    | `PricePoint[]` for a chart range, oldest first. Candle sizes per range are shared (`RANGE_CANDLES`).                             |
-| `quoteAsset` | `USDT` (Binance) or `USD` (Kraken). The app treats USDT as USD.                                                                  |
-| Subscribe    | Live quote updates. Joins the contract in M6.                                                                                    |
+| Capability   | Returns                                                                                                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `listAssets` | `ListedAsset[]`: coins with a USD or USDT pair, under our `AssetId`, each with its direct fiat pairs (EUR, TRY)                                                                            |
+| `snapshot`   | `MarketSnapshot`: a `Quote` per coin (price as `Decimal`, rolling 24-hour change or null, 24-hour volume) and direct fiat prices                                                           |
+| `history`    | `PricePoint[]` for a chart range, oldest first. Candle sizes per range are shared (`RANGE_CANDLES`).                                                                                       |
+| `quoteAsset` | `USDT` (Binance) or `USD` (Kraken). The app treats USDT as USD.                                                                                                                            |
+| `liveFeed`   | `LiveFeed`: the WebSocket URL, subscribe messages, maximum connection age, and a message parser. `addAssets` widens an open feed to more coins, such as watched ones, without a reconnect. |
 
 Errors: a non-2xx answer throws `ProviderHttpError` with its `status` (the service reads 451 to fall back). A response with an unexpected shape throws `ProviderDataError`. One malformed entry in a long list is skipped, but a snapshot with no USD prices at all is an error.
 
@@ -45,6 +45,7 @@ Test data: `npm run record-fixtures` records trimmed responses with synthetic va
 | Fact                                                                                                                                                              | Label                | Source                                                                                                         |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Public WebSocket v2 is at `wss://ws.kraken.com/v2` with no authentication. Channels include `ticker` and `ohlc`.                                                  | Confirmed            | [Kraken WebSocket v2](https://docs.kraken.com/websockets-v2)                                                   |
+| A ticker subscription sent on an open connection adds pairs to it. The app subscribes watched coins this way instead of reconnecting.                             | Confirmed            | [Kraken WebSocket v2](https://docs.kraken.com/websockets-v2), `npm run smoke` 2026-11-23                       |
 | Public REST OHLC is at `GET /0/public/OHLC` with no authentication. Kraken suggests about one call per second.                                                    | Confirmed            | [Kraken historical data](https://docs.kraken.com/exchange/guides/general/historical-data)                      |
 | REST uses `XBT` for bitcoin and `XDG` for dogecoin, in `wsname` (`XBT/USD`) and in result keys (`XXBTZUSD`, `XDGUSD`). The adapter maps them to `BTC` and `DOGE`. | Confirmed            | Live responses, 2026-11-21                                                                                     |
 | Ticker `o` is today's opening price at 00:00 UTC, not a rolling 24-hour open. REST has no rolling 24-hour change, so Kraken snapshots report the change as null.  | Confirmed            | [Get Ticker Information](https://docs.kraken.com/api/docs/rest-api/get-ticker-information/)                    |

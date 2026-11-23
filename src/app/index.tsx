@@ -5,9 +5,10 @@ import { Pressable, Text, View } from 'react-native';
 
 import { FxList } from '@/features/fx/fx-list';
 import { CryptoList } from '@/features/market/crypto-list';
+import { WatchlistView } from '@/features/watchlist/watchlist-view';
 import { Screen } from '@/shared/ui/screen';
 
-type Market = 'crypto' | 'fx';
+type Market = 'watchlist' | 'crypto' | 'fx';
 
 function MarketTab({
   market,
@@ -44,20 +45,32 @@ export default function MarketsScreen() {
         <Text accessibilityRole="header" className="text-2xl font-bold text-black dark:text-white">
           {t('home.title')}
         </Text>
-        <Link href="/settings" asChild>
-          <Pressable hitSlop={8}>
-            <Text className="text-base font-semibold text-blue-600">{t('home.openSettings')}</Text>
-          </Pressable>
-        </Link>
+        <View className="flex-row gap-4">
+          <Link href="/search" asChild>
+            <Pressable hitSlop={8}>
+              <Text className="text-base font-semibold text-blue-600">{t('home.openSearch')}</Text>
+            </Pressable>
+          </Link>
+          <Link href="/settings" asChild>
+            <Pressable hitSlop={8}>
+              <Text className="text-base font-semibold text-blue-600">
+                {t('home.openSettings')}
+              </Text>
+            </Pressable>
+          </Link>
+        </View>
       </View>
       <View
         accessibilityRole="tablist"
         className="mx-4 mb-2 flex-row rounded-lg bg-gray-100 p-1 dark:bg-gray-900"
       >
+        <MarketTab market="watchlist" selected={market === 'watchlist'} onSelect={setMarket} />
         <MarketTab market="crypto" selected={market === 'crypto'} onSelect={setMarket} />
         <MarketTab market="fx" selected={market === 'fx'} onSelect={setMarket} />
       </View>
-      {market === 'crypto' ? <CryptoList /> : <FxList />}
+      {market === 'watchlist' && <WatchlistView />}
+      {market === 'crypto' && <CryptoList />}
+      {market === 'fx' && <FxList />}
     </Screen>
   );
 }

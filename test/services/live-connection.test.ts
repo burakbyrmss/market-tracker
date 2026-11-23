@@ -9,6 +9,7 @@ const feed = (overrides: Partial<LiveFeed> = {}): LiveFeed => ({
   subscribeMessages: ['subscribe'],
   maxAgeMs: null,
   parse: (message) => (message === 'tick' ? [{ assetId: 'BTC' } as LiveUpdate] : []),
+  addAssets: () => [],
   ...overrides,
 });
 
@@ -107,4 +108,30 @@ test('stop closes the socket and never reconnects', () => {
   socket.networkDrops();
   jest.advanceTimersByTime(10 * 60_000);
   expect(factory.sockets).toHaveLength(1);
+});
+
+test('sends added subscriptions at once when open, and again after a reconnect', () => {
+  const { factory, connection } = setup();
+  connection.start();
+  factory.latest().serverOpens();
+
+  connection.send(['add ETH']);
+  expect(factory.latest().sent).toEqual(['subscribe', 'add ETH']);
+
+  factory.latest().networkDrops();
+  jest.advanceTimersByTime(1_000);
+  factory.latest().serverOpens();
+  expect(factory.latest().sent).toEqual(['subscribe', 'add ETH']);
+  connection.stop();
+});
+
+test('holds added subscriptions until the socket opens', () => {
+  const { factory, connection } = setup();
+  connection.start();
+  connection.send(['add ETH']);
+  expect(factory.latest().sent).toEqual([]);
+
+  factory.latest().serverOpens();
+  expect(factory.latest().sent).toEqual(['subscribe', 'add ETH']);
+  connection.stop();
 });

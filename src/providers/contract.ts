@@ -33,6 +33,9 @@ export type LiveFeed = {
   maxAgeMs: number | null;
   // Turns one message into updates. Messages without prices (heartbeats, acks) give [].
   parse(message: string): LiveUpdate[];
+  // Widens an open feed to more coins, such as a newly watched one, without reconnecting.
+  // Returns the messages to send now. Coins already covered, or not listed, add nothing.
+  addAssets(assetIds: readonly AssetId[]): string[];
 };
 
 export type ProviderOptions = {

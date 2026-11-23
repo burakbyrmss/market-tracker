@@ -6,6 +6,7 @@ import { createKrakenProvider } from '@/providers/kraken';
 import { createLiveConnection } from '@/services/market-data/live-connection';
 
 const BTC = 'BTC' as AssetId;
+const ETH = 'ETH' as AssetId;
 
 describe.each<[string, () => CryptoProvider]>([
   ['Binance', createBinanceProvider],
@@ -27,6 +28,30 @@ describe.each<[string, () => CryptoProvider]>([
       connection.start();
     });
     expect(btc.change24hPct).not.toBeNull();
+    expect(btc.updatedAt).toBeGreaterThan(Date.now() - 24 * 60 * 60_000);
+  });
+
+  test('a coin added to the open socket starts sending prices', async () => {
+    const feed = await create().liveFeed([ETH]);
+    const btc = await new Promise<LiveUpdate>((resolve) => {
+      let added = false;
+      const connection = createLiveConnection({
+        feed,
+        onUpdates: (updates) => {
+          // Add bitcoin once the first ether price proves the socket is open.
+          if (!added) {
+            added = true;
+            connection.send(feed.addAssets([BTC]));
+          }
+          const update = updates.find((u) => u.assetId === BTC && u.quote === 'USD');
+          if (update) {
+            connection.stop();
+            resolve(update);
+          }
+        },
+      });
+      connection.start();
+    });
     expect(btc.updatedAt).toBeGreaterThan(Date.now() - 24 * 60 * 60_000);
   });
 });

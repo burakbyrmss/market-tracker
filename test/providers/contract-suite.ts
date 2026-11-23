@@ -100,6 +100,14 @@ export function describeProviderContract(name: string, c: ContractCase) {
       expect(btcEur && toDecimalString(btcEur.price)).toBe(values.prices['BTC/EUR']);
     });
 
+    test('a coin added to an open feed gets live prices', async () => {
+      const { provider } = make();
+      const feed = await provider.liveFeed([id('ETH')]);
+      feed.addAssets([id('BTC'), id('NOPE')]);
+      const updates = c.liveMessages.flatMap((message) => feed.parse(message));
+      expect(updates.some((u) => u.assetId === 'BTC' && u.quote === 'USD')).toBe(true);
+    });
+
     test('live feed ignores messages without prices', async () => {
       const { provider } = make();
       const feed = await provider.liveFeed([id('BTC')]);

@@ -36,7 +36,8 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Parse external data (API, storage, deep links) with Zod once, in `providers/` or `shared/storage`. Inside, trust the types.
 - Asset and currency IDs are ours (`AssetId`, `CurrencyCode`), never provider symbols.
 - REST data goes through TanStack Query. Services export `queryOptions` (for example `fxQueries` in `src/services/fx`). Features call `useQuery` with them and never call a provider.
-- Live prices come from `useLiveQuote` (`src/services/market-data`). Only the market-data service opens sockets. A row reads only its own asset.
+- Live prices come from `useLiveQuote` (`src/services/market-data`). Only the market-data service opens sockets. A row reads only its own asset. Coins outside the market list get live prices through `marketData.watch`, which widens the open feed. Never reconnect to add coins: Kraken bans an IP after about 150 reconnects in 10 minutes.
+- Watchlists live in `useWatchlists` (`src/features/watchlist/store.ts`) as ordered lists of our IDs. Search ranking is `search` in `src/domain/search.ts`.
 - One crypto provider per session. Never mix provider prices on one screen. Always show the data source.
 - All money arithmetic goes through `src/domain/money.ts` (big.js behind an opaque `Decimal`). Plain numbers only for chart plotting and display, via `toDisplayNumber`. ESLint blocks `big.js` imports elsewhere.
 - Crypto prices in the display currency come from `cryptoDisplayPrice` in `src/domain/conversion.ts`. Features use `useDisplayPrice` and `formatDisplayPrice` (`src/features/market/display-price.ts`), which apply it. Do not reimplement the rule.

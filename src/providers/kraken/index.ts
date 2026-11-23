@@ -174,28 +174,41 @@ export function createKrakenProvider(options: ProviderOptions = {}): CryptoProvi
       const fiatById = new Map(table.assets.map((a) => [a.id, a.directFiat]));
       // WebSocket v2 names pairs by our common tickers (BTC/USD), unlike REST (XBT/USD).
       const bySymbol = new Map<string, { assetId: AssetId; quote: PairQuote }>();
-      for (const assetId of assetIds) {
-        const fiat = fiatById.get(assetId);
-        if (!fiat) continue;
-        bySymbol.set(`${assetId}/USD`, { assetId, quote: 'USD' });
-        for (const currency of fiat)
-          bySymbol.set(`${assetId}/${currency}`, { assetId, quote: currency });
-      }
-      const symbols = [...bySymbol.keys()];
-      const subscribeMessages: string[] = [];
-      for (let i = 0; i < symbols.length; i += SUBSCRIBE_CHUNK) {
-        subscribeMessages.push(
-          JSON.stringify({
-            method: 'subscribe',
-            params: { channel: 'ticker', symbol: symbols.slice(i, i + SUBSCRIBE_CHUNK) },
-          }),
-        );
+      const covered = new Set<AssetId>();
+
+      // Adds the pairs of coins not yet covered and returns the messages that subscribe them.
+      function cover(ids: readonly AssetId[]): string[] {
+        const symbols: string[] = [];
+        for (const assetId of ids) {
+          const fiat = fiatById.get(assetId);
+          if (!fiat || covered.has(assetId)) continue;
+          covered.add(assetId);
+          const pairs: [string, PairQuote][] = [
+            [`${assetId}/USD`, 'USD'],
+            ...fiat.map((currency): [string, PairQuote] => [`${assetId}/${currency}`, currency]),
+          ];
+          for (const [symbol, quote] of pairs) {
+            bySymbol.set(symbol, { assetId, quote });
+            symbols.push(symbol);
+          }
+        }
+        const messages: string[] = [];
+        for (let i = 0; i < symbols.length; i += SUBSCRIBE_CHUNK) {
+          messages.push(
+            JSON.stringify({
+              method: 'subscribe',
+              params: { channel: 'ticker', symbol: symbols.slice(i, i + SUBSCRIBE_CHUNK) },
+            }),
+          );
+        }
+        return messages;
       }
 
       return {
         url: LIVE_URL,
-        subscribeMessages,
+        subscribeMessages: cover(assetIds),
         maxAgeMs: null,
+        addAssets: cover,
         parse(message) {
           const body = liveMessageSchema.safeParse(parseJson(message));
           if (!body.success) return [];

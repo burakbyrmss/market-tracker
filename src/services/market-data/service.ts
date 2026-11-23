@@ -1,5 +1,6 @@
 import { rankTopCoins } from '@/domain/asset-classes';
-import type { CryptoProvider } from '@/providers/contract';
+import type { AssetId } from '@/domain/ids';
+import type { CryptoProvider, LiveFeed } from '@/providers/contract';
 
 import { createLiveConnection, type LiveConnection, type SocketLike } from './live-connection';
 import { applySnapshot, applyUpdates, RANKING_SIZE, setMarketStatus } from './live-prices';
@@ -24,12 +25,16 @@ export const REFRESH_AFTER_BACKGROUND_MS = 60_000;
 export type MarketDataService = {
   start(): Promise<void>;
   stop(): void;
+  // Coins that need live prices beyond the market list, such as watchlisted ones.
+  watch(assetIds: readonly AssetId[]): void;
 };
 
 export function createMarketDataService(options: MarketDataOptions): MarketDataService {
   const now = options.now ?? Date.now;
   let provider: CryptoProvider | null = null;
   let connection: LiveConnection | null = null;
+  let feed: LiveFeed | null = null;
+  let watched: readonly AssetId[] = [];
   let appStateSubscription: { remove(): void } | null = null;
   let backgroundSince: number | null = null;
   let generation = 0;
@@ -63,20 +68,21 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
       setMarketStatus('loading');
       try {
         const selection = await selectProvider(options.providers);
-        // The live feed covers the market list. Watchlists join in M10.
-        const feed = await selection.provider.liveFeed(
-          rankTopCoins(selection.snapshot.quotes, RANKING_SIZE),
-        );
+        const listed = rankTopCoins(selection.snapshot.quotes, RANKING_SIZE);
+        const nextFeed = await selection.provider.liveFeed([...new Set([...listed, ...watched])]);
         // stop() ran while this start was waiting.
         if (run !== generation) return;
         provider = selection.provider;
+        feed = nextFeed;
         applySnapshot(selection.snapshot, provider);
         connection = createLiveConnection({
-          feed,
+          feed: nextFeed,
           onUpdates: applyUpdates,
           ...(options.openSocket ? { openSocket: options.openSocket } : {}),
           ...(options.random ? { random: options.random } : {}),
         });
+        // Coins watched while the feed was loading.
+        connection.send(nextFeed.addAssets(watched));
         connection.start();
         appStateSubscription = options.appState.addEventListener('change', onAppStateChange);
         setMarketStatus('live');
@@ -84,11 +90,17 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
         if (run === generation) setMarketStatus('error');
       }
     },
+    watch(assetIds) {
+      watched = assetIds;
+      // Widening the open feed avoids a reconnect: Kraken bans an IP after about 150 in 10 minutes.
+      if (feed && connection) connection.send(feed.addAssets(assetIds));
+    },
     stop() {
       generation += 1;
       connection?.stop();
       appStateSubscription?.remove();
       connection = null;
+      feed = null;
       appStateSubscription = null;
       provider = null;
       backgroundSince = null;

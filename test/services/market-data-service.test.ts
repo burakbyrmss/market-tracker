@@ -15,6 +15,7 @@ import { storage } from '@/shared/storage';
 import { socketFactory } from './fake-socket';
 
 const BTC = 'BTC' as AssetId;
+const id = (raw: string) => raw as AssetId;
 
 function snapshot(source: ProviderId, price: string): MarketSnapshot {
   return {
@@ -34,10 +35,11 @@ function fakeProvider(id: ProviderId, result: () => Promise<MarketSnapshot>): Cr
     listAssets: async () => [],
     history: async () => [],
     snapshot: jest.fn(result),
-    liveFeed: async () => ({
+    liveFeed: jest.fn(async (assetIds: readonly AssetId[]) => ({
       url: `wss://${id}.test`,
-      subscribeMessages: [],
+      subscribeMessages: [`subscribe ${assetIds.join(',')}`],
       maxAgeMs: null,
+      addAssets: (added: readonly AssetId[]) => added.map((asset) => `add ${asset}`),
       parse: (message: string): LiveUpdate[] => [
         {
           assetId: BTC,
@@ -48,7 +50,7 @@ function fakeProvider(id: ProviderId, result: () => Promise<MarketSnapshot>): Cr
           updatedAt: 1,
         },
       ],
-    }),
+    })),
   };
 }
 
@@ -167,5 +169,27 @@ test('an inactive moment, like opening Control Center, keeps the socket', async 
   await service.start();
   app.moveTo('inactive');
   expect(sockets.latest().closed).toBe(false);
+  service.stop();
+});
+
+test('a coin watched before start joins the live feed', async () => {
+  const { service, sockets } = setup();
+  service.watch([id('SOL')]);
+  await service.start();
+
+  sockets.latest().serverOpens();
+  expect(sockets.latest().sent[0]).toBe('subscribe BTC,SOL');
+  service.stop();
+});
+
+test('a coin watched while live is added to the open socket, without reconnecting', async () => {
+  const { service, sockets } = setup();
+  await service.start();
+  sockets.latest().serverOpens();
+
+  service.watch([id('SOL')]);
+
+  expect(sockets.sockets).toHaveLength(1);
+  expect(sockets.latest().sent).toEqual(['subscribe BTC', 'add SOL']);
   service.stop();
 });

@@ -69,3 +69,24 @@ test('a snapshot records its provider and quote asset', () => {
     quoteAsset: 'USD',
   });
 });
+
+test('a snapshot lists every coin by volume, including ones the ranking hides', () => {
+  applySnapshot(
+    {
+      ...snapshot,
+      quotes: [
+        { assetId: id('ETH'), price: decimal('1'), change24hPct: null, volume24h: 5, updatedAt: 0 },
+        {
+          assetId: id('USDC'),
+          price: decimal('1'),
+          change24hPct: null,
+          volume24h: 9,
+          updatedAt: 0,
+        },
+      ],
+    },
+    KRAKEN,
+  );
+  expect(useLivePrices.getState().listed).toEqual(['USDC', 'ETH']);
+  expect(useLivePrices.getState().ranking).toEqual(['ETH']);
+});

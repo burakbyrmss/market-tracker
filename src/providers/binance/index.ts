@@ -156,6 +156,8 @@ export function createBinanceProvider(options: ProviderOptions = {}): CryptoProv
         url: LIVE_URL,
         subscribeMessages: [],
         maxAgeMs: LIVE_MAX_AGE,
+        // The all-market stream already carries every symbol.
+        addAssets: () => [],
         parse(message) {
           const body = parseJson(message);
           if (!Array.isArray(body)) return [];
