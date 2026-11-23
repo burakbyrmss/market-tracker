@@ -1,13 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import type { DisplayPrice } from '@/domain/conversion';
 import { displayCurrencyCode, type AssetId, type DisplayCurrency } from '@/domain/ids';
+import { CHART_RANGES, type ChartRange } from '@/domain/market';
+import { decimal } from '@/domain/money';
+import { ChartSection } from '@/features/chart/chart-section';
 import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
-import { useLivePrices, type MarketSource } from '@/services/market-data';
-import { formatDate, formatFxRate, formatPercentChange, formatPrice } from '@/shared/format';
+import { cryptoQueries, useLivePrices, type MarketSource } from '@/services/market-data';
+import {
+  formatChartTime,
+  formatDate,
+  formatFxRate,
+  formatPercentChange,
+  formatPrice,
+} from '@/shared/format';
 import { useFormatLocale } from '@/shared/i18n';
 import { Screen } from '@/shared/ui/screen';
 
@@ -87,6 +97,30 @@ function PriceMethod({
   );
 }
 
+// The chart plots the provider's own USD or USDT pair. Converting history with today's FX rate
+// would draw prices that never traded, so the chart stays in its quote currency and says so.
+function CryptoChart({ assetId, source }: { assetId: AssetId; source: MarketSource }) {
+  const { t } = useTranslation();
+  const locale = useFormatLocale();
+  const [range, setRange] = useState<ChartRange>('1D');
+  const query = useQuery(cryptoQueries.history(source.id, assetId, range));
+  const usd = displayCurrencyCode('USD');
+
+  return (
+    <ChartSection
+      ranges={CHART_RANGES}
+      range={range}
+      onRange={setRange}
+      query={query}
+      note={t('chart.pair', { pair: `${assetId}/${source.quoteAsset}`, source: source.name })}
+      formatValue={(value) => formatPrice(decimal(value), usd, locale)}
+      formatTime={(time, shown) =>
+        formatChartTime(time, locale, { withTime: shown === '1D' || shown === '1W', utc: false })
+      }
+    />
+  );
+}
+
 export function AssetDetail({ assetId }: { assetId: AssetId }) {
   const { t } = useTranslation();
   const locale = useFormatLocale();
@@ -138,6 +172,7 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
             </Text>
           </Text>
         </View>
+        <CryptoChart assetId={assetId} source={source} />
         <PriceMethod assetId={assetId} currency={currency} price={display} source={source} />
       </ScrollView>
     </Screen>

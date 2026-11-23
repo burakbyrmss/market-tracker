@@ -81,6 +81,34 @@
     "notListed": "{{asset}}, {{source}} üzerinde listelenmiyor.",
     "notFound": "Bu varlık bulunamadı."
   },
+  "chart": {
+    "loading": "Grafik yükleniyor…",
+    "unavailable": "Grafik yüklenemedi.",
+    "empty": "Bu aralık için grafik verisi yok.",
+    "summary": "{{range}} grafiği, {{first}} değerinden {{last}} değerine. En yüksek {{high}}, en düşük {{low}}.",
+    "change": "{{range}} içinde {{change}}",
+    "pair": "Grafik: {{source}} üzerinde {{pair}}",
+    "range": {
+      "1D": "1G",
+      "1W": "1H",
+      "1M": "1A",
+      "1Y": "1Y",
+      "ALL": "Tümü",
+      "5Y": "5Y"
+    },
+    "rangeName": {
+      "1D": "1 gün",
+      "1W": "1 hafta",
+      "1M": "1 ay",
+      "1Y": "1 yıl",
+      "ALL": "tüm zamanlar",
+      "5Y": "5 yıl"
+    }
+  },
+  "fxDetail": {
+    "rateOf": "{{date}} tarihli ECB referans kuru",
+    "notListed": "{{code}}, ECB referans kurlarında yok."
+  },
   "currency": {
     "AUD": "Avustralya doları",
     "BRL": "Brezilya reali",

@@ -44,3 +44,18 @@ export function formatDate(isoDate: string, locale: string): string {
     new Date(`${isoDate}T00:00:00Z`),
   );
 }
+
+// A chart point's time. Intraday ranges show the time of day. FX points are ECB dates at
+// midnight UTC, so `utc` keeps them on their own day.
+export function formatChartTime(
+  ms: number,
+  locale: string,
+  { withTime, utc }: { withTime: boolean; utc: boolean },
+): string {
+  return new Intl.DateTimeFormat(locale, {
+    ...(withTime
+      ? { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+      : { dateStyle: 'medium' }),
+    ...(utc ? { timeZone: 'UTC' } : {}),
+  }).format(new Date(ms));
+}

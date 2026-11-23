@@ -47,10 +47,16 @@ export function goLive() {
   setMarketStatus('live');
 }
 
-export async function renderWithQuery(ui: ReactElement, rates: FxRates | null = fx) {
+// `seed` puts other data in the cache, such as chart history, so no test reaches the network.
+export async function renderWithQuery(
+  ui: ReactElement,
+  rates: FxRates | null = fx,
+  seed: (client: QueryClient) => void = () => {},
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   });
   if (rates) client.setQueryData(fxQueries.latest().queryKey, rates);
+  seed(client);
   return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
 }
