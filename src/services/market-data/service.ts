@@ -1,5 +1,6 @@
 import { rankTopCoins } from '@/domain/asset-classes';
 import type { AssetId } from '@/domain/ids';
+import type { ChartRange, PricePoint } from '@/domain/market';
 import type { CryptoProvider, LiveFeed } from '@/providers/contract';
 
 import { createLiveConnection, type LiveConnection, type SocketLike } from './live-connection';
@@ -27,6 +28,8 @@ export type MarketDataService = {
   stop(): void;
   // Coins that need live prices beyond the market list, such as watchlisted ones.
   watch(assetIds: readonly AssetId[]): void;
+  // Chart data from the session's provider, so a chart never mixes in another provider's prices.
+  history(assetId: AssetId, range: ChartRange, signal?: AbortSignal): Promise<PricePoint[]>;
 };
 
 export function createMarketDataService(options: MarketDataOptions): MarketDataService {
@@ -89,6 +92,10 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
       } catch {
         if (run === generation) setMarketStatus('error');
       }
+    },
+    async history(assetId, range, signal) {
+      if (!provider) throw new Error('Market data has not started');
+      return provider.history(assetId, range, signal);
     },
     watch(assetIds) {
       watched = assetIds;
