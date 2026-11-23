@@ -51,6 +51,13 @@ export default function MarketsScreen() {
               <Text className="text-base font-semibold text-blue-600">{t('home.openSearch')}</Text>
             </Pressable>
           </Link>
+          <Link href="/converter" asChild>
+            <Pressable hitSlop={8}>
+              <Text className="text-base font-semibold text-blue-600">
+                {t('home.openConverter')}
+              </Text>
+            </Pressable>
+          </Link>
           <Link href="/settings" asChild>
             <Pressable hitSlop={8}>
               <Text className="text-base font-semibold text-blue-600">

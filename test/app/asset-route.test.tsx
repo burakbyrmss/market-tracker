@@ -5,6 +5,7 @@ import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import type { ReactNode } from 'react';
 
 import AssetRoute from '@/app/asset/[id]';
+import ConverterRoute from '@/app/converter';
 import FxRoute from '@/app/fx/[code]';
 import MarketsScreen from '@/app/index';
 import SearchRoute from '@/app/search';
@@ -94,4 +95,12 @@ test('tapping a currency in the FX list opens its detail screen', async () => {
 
   expect(screen).toHavePathname('/fx/EUR');
   expect(screen.getByRole('header', { name: 'EUR' })).toBeOnTheScreen();
+});
+
+test('the markets header opens the converter', async () => {
+  goLive();
+  await renderRouter({ ...routes, converter: ConverterRoute }, { wrapper: fxWrapper });
+  await fireEvent.press(screen.getByRole('link', { name: 'Convert' }));
+  expect(screen).toHavePathname('/converter');
+  expect(screen.getByTestId('converter-result')).toHaveTextContent('$50,000.00');
 });

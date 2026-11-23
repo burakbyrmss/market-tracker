@@ -59,3 +59,8 @@ export function formatChartTime(
     ...(utc ? { timeZone: 'UTC' } : {}),
   }).format(new Date(ms));
 }
+
+// A coin amount: up to 8 decimal places (one satoshi), without trailing zeros.
+export function formatCryptoAmount(value: Decimal, locale: string): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 8 }).format(toDisplayNumber(value));
+}
