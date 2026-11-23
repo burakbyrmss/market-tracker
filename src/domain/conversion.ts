@@ -20,13 +20,9 @@ export type DisplayPrice =
   | { method: 'unavailable'; reason: 'no-usd-price' | 'no-fx-rate' };
 
 // Rule from docs/product/requirements.md: use the provider's direct fiat pair when it exists,
-// otherwise multiply the USD price by the FX rate.
-export function cryptoDisplayPrice(
-  inputs: CryptoPriceInputs,
-  display: DisplayCurrency,
-): DisplayPrice {
-  const target = displayCurrencyCode(display);
-
+// otherwise multiply the USD price by the FX rate. Works for any fiat currency, so the
+// converter applies the same rule as the display currency.
+export function cryptoPriceIn(inputs: CryptoPriceInputs, target: CurrencyCode): DisplayPrice {
   if (target === USD) {
     return inputs.usdPrice
       ? { method: 'usd', price: inputs.usdPrice }
@@ -47,4 +43,11 @@ export function cryptoDisplayPrice(
     rate,
     fxDate: inputs.fx.date,
   };
+}
+
+export function cryptoDisplayPrice(
+  inputs: CryptoPriceInputs,
+  display: DisplayCurrency,
+): DisplayPrice {
+  return cryptoPriceIn(inputs, displayCurrencyCode(display));
 }
