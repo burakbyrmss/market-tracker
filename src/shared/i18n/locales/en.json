@@ -37,7 +37,10 @@
     "rowLabel": "{{asset}}, {{price}}, {{change}}",
     "rowLabelNoChange": "{{asset}}, {{price}}",
     "priceUnavailable": "price unavailable",
-    "sources": "Sources: {{crypto}}, {{fx}}"
+    "sources": "Sources: {{crypto}}, {{fx}}",
+    "savedConnecting": "Showing saved prices from {{time}}. Connecting…",
+    "savedOffline": "Offline. Showing saved prices from {{time}}.",
+    "reconnecting": "Connection lost. Prices from {{time}}. Reconnecting…"
   },
   "markets": {
     "crypto": "Crypto",
@@ -85,7 +88,8 @@
     "loading": "Loading rates…",
     "unavailable": "Rates are unavailable. Check your connection.",
     "unit": "1 {{code}}",
-    "rowLabel": "1 {{code}}, {{name}}, {{value}}"
+    "rowLabel": "1 {{code}}, {{name}}, {{value}}",
+    "savedRates": "Could not update. Showing saved rates."
   },
   "detail": {
     "change24h": "24h change",
@@ -122,7 +126,8 @@
       "1Y": "1 year",
       "ALL": "all time",
       "5Y": "5 years"
-    }
+    },
+    "saved": "Could not update. Showing the chart saved {{time}}."
   },
   "fxDetail": {
     "rateOf": "ECB reference rate of {{date}}",

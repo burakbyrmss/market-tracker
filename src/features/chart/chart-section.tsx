@@ -4,10 +4,13 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { ChartRange, FxRange, PricePoint } from '@/domain/market';
 
+import { Notice } from '@/shared/ui/notice';
+
 import { LineChart } from './line-chart';
 
 type ChartQuery = {
   data: PricePoint[] | undefined;
+  dataUpdatedAt: number;
   isError: boolean;
   refetch: () => unknown;
 };
@@ -21,6 +24,8 @@ type ChartSectionProps<Range extends ChartRange | FxRange> = {
   note: string;
   formatValue: (value: number) => string;
   formatTime: (time: number, range: Range) => string;
+  // When the shown chart was fetched, for the notice on a saved chart that could not update.
+  formatSavedAt: (time: number) => string;
 };
 
 function Placeholder({ children }: { children: ReactNode }) {
@@ -36,6 +41,7 @@ export function ChartSection<Range extends ChartRange | FxRange>({
   note,
   formatValue,
   formatTime,
+  formatSavedAt,
 }: ChartSectionProps<Range>) {
   const { t } = useTranslation();
   // Plain union parameters: typed translation keys do not resolve through the generic.
@@ -84,6 +90,12 @@ export function ChartSection<Range extends ChartRange | FxRange>({
 
   return (
     <View className="gap-3">
+      {query.isError && query.data !== undefined && (
+        <Notice
+          text={t('chart.saved', { time: formatSavedAt(query.dataUpdatedAt) })}
+          onRetry={() => void query.refetch()}
+        />
+      )}
       {body}
       <View
         accessibilityRole="tablist"

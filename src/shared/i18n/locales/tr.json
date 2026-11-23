@@ -37,7 +37,10 @@
     "rowLabel": "{{asset}}, {{price}}, {{change}}",
     "rowLabelNoChange": "{{asset}}, {{price}}",
     "priceUnavailable": "fiyat yok",
-    "sources": "Kaynaklar: {{crypto}}, {{fx}}"
+    "sources": "Kaynaklar: {{crypto}}, {{fx}}",
+    "savedConnecting": "{{time}} tarihli kayıtlı fiyatlar gösteriliyor. Bağlanıyor…",
+    "savedOffline": "Çevrimdışı. {{time}} tarihli kayıtlı fiyatlar gösteriliyor.",
+    "reconnecting": "Bağlantı koptu. Fiyatlar {{time}} itibarıyla. Yeniden bağlanıyor…"
   },
   "markets": {
     "crypto": "Kripto",
@@ -85,7 +88,8 @@
     "loading": "Kurlar yükleniyor…",
     "unavailable": "Kurlar alınamadı. Bağlantınızı kontrol edin.",
     "unit": "1 {{code}}",
-    "rowLabel": "1 {{code}}, {{name}}, {{value}}"
+    "rowLabel": "1 {{code}}, {{name}}, {{value}}",
+    "savedRates": "Güncellenemedi. Kayıtlı kurlar gösteriliyor."
   },
   "detail": {
     "change24h": "24 saatlik değişim",
@@ -122,7 +126,8 @@
       "1Y": "1 yıl",
       "ALL": "tüm zamanlar",
       "5Y": "5 yıl"
-    }
+    },
+    "saved": "Güncellenemedi. {{time}} tarihinde kaydedilen grafik gösteriliyor."
   },
   "fxDetail": {
     "rateOf": "{{date}} tarihli ECB referans kuru",

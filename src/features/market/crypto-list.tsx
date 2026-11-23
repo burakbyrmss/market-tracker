@@ -15,6 +15,7 @@ import { useFormatLocale } from '@/shared/i18n';
 import { LetterAvatar } from '@/shared/ui/letter-avatar';
 
 import { formatDisplayPrice, useDisplayPrice } from './display-price';
+import { PricesNotice } from './prices-notice';
 
 type CryptoRowProps = {
   assetId: AssetId;
@@ -80,7 +81,10 @@ export function CryptoList() {
   // object, so they re-render only when new rates arrive.
   const fx = useQuery(fxQueries.latest()).data ?? null;
 
-  if (status === 'error') {
+  // Saved prices count: offline, the list shows them with their age instead of an error.
+  const hasPrices = source !== null && ranking.length > 0;
+
+  if (!hasPrices && status === 'error') {
     return (
       <View className="flex-1 items-center justify-center gap-3 px-8">
         <Text className="text-center text-base text-black dark:text-white">
@@ -97,7 +101,7 @@ export function CryptoList() {
     );
   }
 
-  if (status !== 'live' || !source) {
+  if (!hasPrices) {
     return (
       <View className="flex-1 items-center justify-center">
         <Text className="text-base text-gray-500">{t('market.loading')}</Text>
@@ -107,6 +111,9 @@ export function CryptoList() {
 
   return (
     <View className="flex-1">
+      <View className="px-4">
+        <PricesNotice />
+      </View>
       <FlashList
         data={ranking}
         keyExtractor={(assetId) => assetId}

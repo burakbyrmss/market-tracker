@@ -22,11 +22,18 @@ const fx: FxRates = {
   ]),
 };
 
-async function renderList(data: FxRates | null) {
+async function renderList(data: FxRates | null, { refreshFailed = false } = {}) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   });
   if (data) client.setQueryData(fxQueries.latest().queryKey, data);
+  // Saved rates whose refresh failed: the data stays, with the error beside it.
+  if (refreshFailed) {
+    client
+      .getQueryCache()
+      .find({ queryKey: fxQueries.latest().queryKey })
+      ?.setState({ status: 'error', error: new Error('offline'), fetchStatus: 'idle' });
+  }
   await render(
     <QueryClientProvider client={client}>
       <FxList />
@@ -70,4 +77,16 @@ test('names currencies in Turkish', async () => {
 test('offers a retry when the rates cannot be loaded', async () => {
   await renderList(null);
   expect(await screen.findByRole('button', { name: 'Try again' })).toBeOnTheScreen();
+});
+
+test('saved rates that could not update stay on screen with a notice and a retry', async () => {
+  await renderList(fx, { refreshFailed: true });
+  expect(screen.getByText('ECB reference rates of Nov 14, 2023')).toBeOnTheScreen();
+  expect(screen.getByText('Could not update. Showing saved rates.')).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Try again' })).toBeOnTheScreen();
+});
+
+test('rates that updated show no notice', async () => {
+  await renderList(fx);
+  expect(screen.queryByTestId('stale-notice')).toBeNull();
 });
