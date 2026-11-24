@@ -4,7 +4,15 @@ import type { ChartRange, PricePoint } from '@/domain/market';
 import type { CryptoProvider, LiveFeed } from '@/providers/contract';
 
 import { createLiveConnection, type LiveConnection, type SocketLike } from './live-connection';
-import { applySnapshot, applyUpdates, RANKING_SIZE, setMarketStatus } from './live-prices';
+import {
+  applySnapshot,
+  applyUpdates,
+  RANKING_SIZE,
+  setConnected,
+  setMarketStatus,
+  useLivePrices,
+} from './live-prices';
+import type { PriceCache } from './saved-prices';
 import { selectProvider } from './select-provider';
 
 export type AppStateLike = {
@@ -17,6 +25,8 @@ export type MarketDataOptions = {
   openSocket?: (url: string) => SocketLike;
   random?: () => number;
   now?: () => number;
+  // Saved prices, shown until live ones arrive and when the network is down.
+  cache?: PriceCache;
 };
 
 // After this long in the background, prices of quiet coins may be old, so resume refetches the
@@ -44,7 +54,8 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
 
   async function refreshSnapshot(current: CryptoProvider) {
     try {
-      applySnapshot(await current.snapshot(), current);
+      applySnapshot(await current.snapshot(), current, now());
+      options.cache?.save();
     } catch {
       // Live updates continue. Old prices stay until they arrive.
     }
@@ -52,9 +63,15 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
 
   // The socket is closed in the background: no data is used and the OS would cut it anyway.
   function onAppStateChange(state: string) {
-    if (!connection || !provider) return;
+    if (!connection || !provider) {
+      // Started without a network. Coming back to the app is a good moment to try again.
+      if (state === 'active' && useLivePrices.getState().status === 'error') void service.start();
+      return;
+    }
     if (state === 'background') {
       connection.stop();
+      // Live updates since the last snapshot are saved too, so a restart offline shows them.
+      options.cache?.save();
       backgroundSince = now();
     } else if (state === 'active' && backgroundSince !== null) {
       const away = now() - backgroundSince;
@@ -64,34 +81,50 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
     }
   }
 
-  return {
+  let starting: Promise<void> | null = null;
+
+  async function startOnce() {
+    const run = ++generation;
+    options.cache?.restore();
+    appStateSubscription ??= options.appState.addEventListener('change', onAppStateChange);
+    setMarketStatus('loading');
+    try {
+      const selection = await selectProvider(options.providers);
+      const listed = rankTopCoins(selection.snapshot.quotes, RANKING_SIZE);
+      const nextFeed = await selection.provider.liveFeed([...new Set([...listed, ...watched])]);
+      // stop() ran while this start was waiting.
+      if (run !== generation) return;
+      provider = selection.provider;
+      feed = nextFeed;
+      applySnapshot(selection.snapshot, provider, now());
+      options.cache?.save();
+      connection = createLiveConnection({
+        feed: nextFeed,
+        onUpdates: (updates) => applyUpdates(updates, now()),
+        onDisconnect: () => setConnected(false),
+        ...(options.openSocket ? { openSocket: options.openSocket } : {}),
+        ...(options.random ? { random: options.random } : {}),
+      });
+      // Coins watched while the feed was loading.
+      connection.send(nextFeed.addAssets(watched));
+      connection.start();
+      setMarketStatus('live');
+    } catch {
+      if (run === generation) setMarketStatus('error');
+    }
+  }
+
+  const service: MarketDataService = {
     async start() {
       if (provider) return;
-      const run = ++generation;
-      setMarketStatus('loading');
-      try {
-        const selection = await selectProvider(options.providers);
-        const listed = rankTopCoins(selection.snapshot.quotes, RANKING_SIZE);
-        const nextFeed = await selection.provider.liveFeed([...new Set([...listed, ...watched])]);
-        // stop() ran while this start was waiting.
-        if (run !== generation) return;
-        provider = selection.provider;
-        feed = nextFeed;
-        applySnapshot(selection.snapshot, provider);
-        connection = createLiveConnection({
-          feed: nextFeed,
-          onUpdates: applyUpdates,
-          ...(options.openSocket ? { openSocket: options.openSocket } : {}),
-          ...(options.random ? { random: options.random } : {}),
+      // The retry button and a return to the foreground can both ask at once.
+      if (!starting) {
+        const attempt: Promise<void> = startOnce().finally(() => {
+          if (starting === attempt) starting = null;
         });
-        // Coins watched while the feed was loading.
-        connection.send(nextFeed.addAssets(watched));
-        connection.start();
-        appStateSubscription = options.appState.addEventListener('change', onAppStateChange);
-        setMarketStatus('live');
-      } catch {
-        if (run === generation) setMarketStatus('error');
+        starting = attempt;
       }
+      return starting;
     },
     async history(assetId, range, signal) {
       if (!provider) throw new Error('Market data has not started');
@@ -104,6 +137,8 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
     },
     stop() {
       generation += 1;
+      starting = null;
+      options.cache?.save();
       connection?.stop();
       appStateSubscription?.remove();
       connection = null;
@@ -113,4 +148,5 @@ export function createMarketDataService(options: MarketDataOptions): MarketDataS
       backgroundSince = null;
     },
   };
+  return service;
 }

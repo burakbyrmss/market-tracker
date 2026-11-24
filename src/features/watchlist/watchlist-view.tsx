@@ -8,6 +8,7 @@ import type { FxRates } from '@/domain/fx';
 import { displayCurrencyCode, type AssetId, type DisplayCurrency } from '@/domain/ids';
 import { FxRateRow } from '@/features/fx/fx-list';
 import { CryptoRow } from '@/features/market/crypto-list';
+import { PricesNotice } from '@/features/market/prices-notice';
 import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { useLivePrices, useLiveQuote } from '@/services/market-data';
@@ -159,6 +160,11 @@ export function WatchlistView() {
           </Text>
         </Pressable>
       </View>
+      {coins.length > 0 && (
+        <View className="px-4">
+          <PricesNotice />
+        </View>
+      )}
       {coins.length > 0 && (
         <Section title={t('markets.crypto')}>
           {coins.map((id, index) =>

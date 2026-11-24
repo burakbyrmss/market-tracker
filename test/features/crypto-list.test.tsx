@@ -1,12 +1,19 @@
-import { act, screen, within } from '@testing-library/react-native';
+import { act, fireEvent, screen, within } from '@testing-library/react-native';
 
 import { decimal } from '@/domain/money';
 import { CryptoList } from '@/features/market/crypto-list';
 import { DEFAULT_SETTINGS, useSettings } from '@/features/settings/store';
-import { applyUpdates, resetLivePrices, setMarketStatus } from '@/services/market-data/live-prices';
+import { marketData } from '@/services/market-data';
+import {
+  applySnapshot,
+  applyUpdates,
+  resetLivePrices,
+  setConnected,
+  setMarketStatus,
+} from '@/services/market-data/live-prices';
 import i18n from '@/shared/i18n';
 
-import { asset, currency, goLive, renderWithQuery } from '../market-fixtures';
+import { asset, currency, goLive, renderWithQuery, snapshot } from '../market-fixtures';
 
 const rowIds = () => screen.getAllByTestId(/^crypto-row-/).map((row) => row.props.testID as string);
 const priceOf = (id: string) => screen.getByTestId(`price-${id}`);
@@ -79,6 +86,71 @@ test('shows loading, then a retry when prices are unavailable', async () => {
 
   await act(() => setMarketStatus('error'));
   expect(screen.getByRole('button', { name: 'Try again' })).toBeOnTheScreen();
+});
+
+describe('saved prices', () => {
+  // As the service leaves the store after a start without a network.
+  function savedOffline(status: 'loading' | 'error') {
+    applySnapshot(snapshot, { name: 'Binance', quoteAsset: 'USDT' }, Date.UTC(2026, 10, 20, 9, 30));
+    setConnected(false);
+    setMarketStatus(status);
+  }
+
+  test('offline, the list shows the saved prices, how old they are, and a retry', async () => {
+    const start = jest.spyOn(marketData, 'start').mockResolvedValue();
+    savedOffline('error');
+    await renderWithQuery(<CryptoList />);
+
+    expect(priceOf('BTC')).toHaveTextContent('$50,000.00');
+    expect(screen.getByText('Source: Binance')).toBeOnTheScreen();
+    expect(
+      screen.getByText(/^Offline\. Showing saved prices from Nov \d+, \d\d:\d\d\s[AP]M\.$/),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Try again' }));
+    expect(start).toHaveBeenCalled();
+    start.mockRestore();
+  });
+
+  test('while connecting at launch, saved prices say so', async () => {
+    savedOffline('loading');
+    await renderWithQuery(<CryptoList />);
+    expect(priceOf('ETH')).toHaveTextContent('$2,500.00');
+    expect(screen.getByText(/^Showing saved prices from .+\. Connecting…$/)).toBeOnTheScreen();
+  });
+
+  test('live prices show no notice, and a dropped connection shows one until prices return', async () => {
+    goLive();
+    await renderWithQuery(<CryptoList />);
+    expect(screen.queryByTestId('stale-notice')).toBeNull();
+
+    await act(() => setConnected(false));
+    expect(
+      screen.getByText(/^Connection lost\. Prices from .+\. Reconnecting…$/),
+    ).toBeOnTheScreen();
+
+    await act(() =>
+      applyUpdates([
+        {
+          assetId: asset('BTC'),
+          quote: 'USD',
+          price: decimal('50100'),
+          change24hPct: null,
+          volume24h: null,
+          updatedAt: 1,
+        },
+      ]),
+    );
+    expect(screen.queryByTestId('stale-notice')).toBeNull();
+  });
+
+  test('the notice is in Turkish too', async () => {
+    await i18n.changeLanguage('tr');
+    savedOffline('error');
+    await renderWithQuery(<CryptoList />);
+    expect(
+      screen.getByText(/^Çevrimdışı\. .+ tarihli kayıtlı fiyatlar gösteriliyor\.$/),
+    ).toBeOnTheScreen();
+  });
 });
 
 describe('display currency', () => {

@@ -11,8 +11,11 @@ const points: PricePoint[] = [
   { time: 2 * HOUR, price: 120 },
 ];
 
-const query = (overrides: Partial<{ data: PricePoint[]; isError: boolean }> = {}) => ({
+const query = (
+  overrides: Partial<{ data: PricePoint[]; isError: boolean; dataUpdatedAt: number }> = {},
+) => ({
   data: undefined,
+  dataUpdatedAt: 0,
   isError: false,
   refetch: jest.fn(),
   ...overrides,
@@ -29,6 +32,7 @@ async function renderChart(props: Partial<Parameters<typeof ChartSection<ChartRa
       note="Chart: BTC/USDT on Binance"
       formatValue={(value) => `$${value}`}
       formatTime={(time) => `hour ${time / HOUR}`}
+      formatSavedAt={(time) => `hour ${time / HOUR}`}
       {...props}
     />,
   );
@@ -100,4 +104,18 @@ test('offers a retry when the chart fails', async () => {
 test('says when a range has too little data to draw', async () => {
   await renderChart({ query: query({ data: points.slice(0, 1) }) });
   expect(screen.getByText('No chart data for this range.')).toBeOnTheScreen();
+});
+
+test('keeps a saved chart that could not update, says how old it is, and offers a retry', async () => {
+  const failed = query({ data: points, isError: true, dataUpdatedAt: 5 * HOUR });
+  await renderChart({ query: failed });
+  expect(screen.getByTestId('chart-value')).toHaveTextContent('$120');
+  expect(screen.getByText('Could not update. Showing the chart saved hour 5.')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByRole('button', { name: 'Try again' }));
+  expect(failed.refetch).toHaveBeenCalled();
+});
+
+test('a chart that updated shows no notice', async () => {
+  await renderChart();
+  expect(screen.queryByTestId('stale-notice')).toBeNull();
 });

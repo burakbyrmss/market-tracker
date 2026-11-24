@@ -36,3 +36,22 @@ export function persistOptions<State extends Persisted, Persisted extends object
     },
   };
 }
+
+// A stored JSON value checked against `schema`. Missing, unreadable, or invalid data reads as
+// null, as if nothing was stored: it may come from an older app version or a damaged file.
+export function readStored<Value>(key: string, schema: z.ZodType<Value>): Value | null {
+  const raw = storage.getString(key);
+  if (raw === undefined) return null;
+  let json: unknown;
+  try {
+    json = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  const parsed = schema.safeParse(json);
+  return parsed.success ? parsed.data : null;
+}
+
+export function writeStored(key: string, value: unknown) {
+  storage.set(key, JSON.stringify(value));
+}

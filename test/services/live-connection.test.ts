@@ -16,14 +16,16 @@ const feed = (overrides: Partial<LiveFeed> = {}): LiveFeed => ({
 function setup(overrides: Partial<LiveFeed> = {}) {
   const factory = socketFactory();
   const onUpdates = jest.fn();
+  const onDisconnect = jest.fn();
   // random() = 1 makes the jittered delay its upper bound: 1 s, 2 s, 4 s ...
   const connection = createLiveConnection({
     feed: feed(overrides),
     onUpdates,
+    onDisconnect,
     openSocket: factory.open,
     random: () => 1,
   });
-  return { factory, onUpdates, connection };
+  return { factory, onUpdates, onDisconnect, connection };
 }
 
 beforeEach(() => jest.useFakeTimers());
@@ -134,4 +136,23 @@ test('holds added subscriptions until the socket opens', () => {
   factory.latest().serverOpens();
   expect(factory.latest().sent).toEqual(['subscribe', 'add ETH']);
   connection.stop();
+});
+
+test('reports a dropped or silent connection, but not a planned stop or age reconnect', () => {
+  const { factory, onDisconnect, connection } = setup({ maxAgeMs: 10_000 });
+  connection.start();
+  factory.latest().serverOpens();
+  jest.advanceTimersByTime(10_000);
+  expect(factory.sockets).toHaveLength(2);
+  expect(onDisconnect).not.toHaveBeenCalled();
+
+  factory.latest().networkDrops();
+  expect(onDisconnect).toHaveBeenCalledTimes(1);
+
+  jest.advanceTimersByTime(1_000);
+  jest.advanceTimersByTime(SILENCE_LIMIT_MS);
+  expect(onDisconnect).toHaveBeenCalledTimes(2);
+
+  connection.stop();
+  expect(onDisconnect).toHaveBeenCalledTimes(2);
 });

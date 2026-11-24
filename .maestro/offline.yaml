@@ -1,0 +1,45 @@
+# M13 exit check (docs/roadmap.md): offline, the app shows saved data with labels and no screen is
+# blank. Android only: Maestro switches airplane mode on Android, not on iOS. On iOS, run the
+# same steps by hand with Control Center.
+#   maestro test .maestro/offline.yaml
+appId: com.utilizing.markettracker
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: 'crypto-row-BTC'
+    timeout: 30000
+# Charts and FX rates are saved a moment after they load.
+- tapOn:
+    id: 'crypto-row-BTC'
+- extendedWaitUntil:
+    visible:
+      id: 'price-chart'
+    timeout: 30000
+- back
+- tapOn: '(FX|Döviz)'
+- extendedWaitUntil:
+    visible: '.*ECB.*'
+    timeout: 30000
+- waitForAnimationToEnd
+- stopApp
+- setAirplaneMode: enabled
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: 'stale-notice'
+    timeout: 30000
+- assertVisible:
+    id: 'price-BTC'
+- assertVisible: '(Offline|Çevrimdışı).*'
+- tapOn:
+    id: 'crypto-row-BTC'
+- assertVisible:
+    id: 'detail-price'
+- assertVisible:
+    id: 'price-chart'
+- back
+- tapOn: '(FX|Döviz)'
+- assertVisible: '.*ECB.*'
+- setAirplaneMode: disabled

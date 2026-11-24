@@ -6,7 +6,10 @@ import type { ChartRange, ProviderId } from '@/domain/market';
 
 import { createBinanceProvider } from '@/providers/binance';
 import { createKrakenProvider } from '@/providers/kraken';
+import { OFFLINE_MAX_AGE_MS, persisted } from '@/shared/query/persist';
+import { storedPricePoints } from '@/shared/storage/schemas';
 
+import { savedPrices } from './saved-prices';
 import { createMarketDataService } from './service';
 
 export {
@@ -24,6 +27,7 @@ export { lastProviderId } from './select-provider';
 export const marketData = createMarketDataService({
   providers: [createBinanceProvider(), createKrakenProvider()],
   appState: AppState,
+  cache: savedPrices,
 });
 
 const MINUTE = 60_000;
@@ -45,6 +49,15 @@ export const cryptoQueries = {
       queryKey: ['crypto', 'history', provider, assetId, range],
       queryFn: ({ signal }) => marketData.history(assetId, range, signal),
       staleTime: STALE[range],
-      gcTime: 60 * MINUTE,
+      gcTime: OFFLINE_MAX_AGE_MS,
     }),
 };
+
+// Saved on the device, so a chart opened offline shows its last copy.
+export const cryptoPersisted = [
+  persisted({
+    key: ['crypto', 'history'],
+    schema: storedPricePoints,
+    toStored: (points) => points,
+  }),
+];

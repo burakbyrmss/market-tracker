@@ -45,6 +45,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Settings (theme, language, display currency) live in `useSettings` (`src/features/settings/store.ts`). Change them through the store, never by calling `i18n.changeLanguage` or `colorScheme.set` directly.
 - Conversions go through `convert` in `src/domain/converter.ts`, which applies the display-price rule (`cryptoPriceIn`) to any currency. Divide the amount itself, never multiply by a rounded inverse rate.
 - Charts use `ChartSection` (`src/features/chart`) with `react-native-svg` (ADR 0015). A coin chart plots the provider's own pair, never history converted at today's FX rate.
+- Offline: the live store keeps `asOf` and `connected`, and `savedPrices` restores the last prices at start. REST queries a screen needs offline are listed in a service's `*Persisted` families (`persistQueryCache` in `src/shared/query/persist.ts`) with a Zod schema for the stored form. A screen with saved data shows it with a `Notice` saying how old it is, never an error page or a blank screen.
 - Format prices, percentages, and rates with `src/shared/format`. Never call `toFixed` on a price for display.
 - No new dependency without a reason in the PR. Architectural changes need an ADR in `docs/decisions/`.
 

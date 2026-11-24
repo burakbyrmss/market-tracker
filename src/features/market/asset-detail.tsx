@@ -22,6 +22,7 @@ import { useFormatLocale } from '@/shared/i18n';
 import { Screen } from '@/shared/ui/screen';
 
 import { formatDisplayPrice, useDisplayPrice } from './display-price';
+import { PricesNotice } from './prices-notice';
 
 function Message({ title, text }: { title: string; text: string }) {
   return (
@@ -117,6 +118,7 @@ function CryptoChart({ assetId, source }: { assetId: AssetId; source: MarketSour
       formatTime={(time, shown) =>
         formatChartTime(time, locale, { withTime: shown === '1D' || shown === '1W', utc: false })
       }
+      formatSavedAt={(time) => formatChartTime(time, locale, { withTime: true, utc: false })}
     />
   );
 }
@@ -172,6 +174,7 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
             </Text>
           </Text>
         </View>
+        <PricesNotice />
         <CryptoChart assetId={assetId} source={source} />
         <PriceMethod assetId={assetId} currency={currency} price={display} source={source} />
       </ScrollView>

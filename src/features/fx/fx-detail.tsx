@@ -12,6 +12,7 @@ import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { formatChartTime, formatDate, formatPrice } from '@/shared/format';
 import { useCurrencyName, useFormatLocale } from '@/shared/i18n';
+import { Notice } from '@/shared/ui/notice';
 import { Screen } from '@/shared/ui/screen';
 
 const USD = displayCurrencyCode('USD');
@@ -48,6 +49,7 @@ function FxChart({ code, quote }: { code: CurrencyCode; quote: CurrencyCode }) {
       note={t('chart.pair', { pair: `${code}/${quote}`, source: FX_SOURCE_NAME })}
       formatValue={(value) => formatPrice(decimal(value), quote, locale)}
       formatTime={(time) => formatChartTime(time, locale, { withTime: false, utc: true })}
+      formatSavedAt={(time) => formatChartTime(time, locale, { withTime: true, utc: false })}
     />
   );
 }
@@ -82,6 +84,9 @@ export function FxDetail({ code }: { code: CurrencyCode }) {
             {t('fxDetail.rateOf', { date: formatDate(fx.date, locale) })}
           </Text>
         </View>
+        {latest.isError && (
+          <Notice text={t('fx.savedRates')} onRetry={() => void latest.refetch()} />
+        )}
         <FxChart code={code} quote={quote} />
       </ScrollView>
     </Screen>

@@ -11,6 +11,7 @@ import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { formatDate, formatPrice } from '@/shared/format';
 import { useCurrencyName, useFormatLocale } from '@/shared/i18n';
 import { LetterAvatar } from '@/shared/ui/letter-avatar';
+import { Notice } from '@/shared/ui/notice';
 
 // One currency valued in the display currency: "1 USD = ₺38.12".
 export function FxRateRow({
@@ -92,6 +93,11 @@ export function FxList() {
       <Text className="px-4 pb-2 text-sm text-gray-500">
         {t('fx.ratesOf', { date: formatDate(fx.date, locale) })}
       </Text>
+      {query.isError && (
+        <View className="px-4 pb-2">
+          <Notice text={t('fx.savedRates')} onRetry={() => void query.refetch()} />
+        </View>
+      )}
       <FlashList
         data={listedCodes(fx, display)}
         keyExtractor={(code) => code}

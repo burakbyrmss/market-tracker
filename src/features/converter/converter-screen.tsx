@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { convert, parseAmount, type CryptoPrices, type Unit } from '@/domain/converter';
 import { displayCurrencyCode, type AssetId, type CurrencyCode } from '@/domain/ids';
 import type { Decimal } from '@/domain/money';
+import { PricesNotice } from '@/features/market/prices-notice';
 import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { useLivePrices } from '@/services/market-data';
@@ -164,6 +165,7 @@ export function ConverterScreen() {
                     {note}
                   </Text>
                 ))}
+                {(from.kind === 'crypto' || to.kind === 'crypto') && <PricesNotice />}
               </>
             ) : (
               <Text testID="converter-result" className="text-base text-gray-500">
