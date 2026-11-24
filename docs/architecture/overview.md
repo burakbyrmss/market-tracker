@@ -72,7 +72,11 @@ Frankfurter, ECB source
 	time series  -> FX charts
 
 TanStack Query cache and Zustand stores -> MMKV
-	-> offline: last values with a "stale since" label
+	- last prices: saved after each snapshot and when the app goes to the background
+	- FX rates and charts: saved 2 s after they load, kept 7 days, at most 60 entries
+	- read back through Zod schemas; damaged or foreign data is dropped
+	-> offline: last values with a "stale since" label, and a retry
+	-> a failed start retries when the app returns to the foreground
 ```
 
 ## Provider selection
