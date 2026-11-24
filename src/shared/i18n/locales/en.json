@@ -102,7 +102,8 @@
     "noUsdPrice": "{{source}} has no USD price for {{asset}}.",
     "noFxRate": "The USD/{{currency}} rate has not loaded yet.",
     "notListed": "{{asset}} is not listed on {{source}}.",
-    "notFound": "This asset does not exist."
+    "notFound": "This asset does not exist.",
+    "disclaimer": "For information only. Not investment advice."
   },
   "chart": {
     "loading": "Loading chart…",
@@ -164,5 +165,16 @@
     "TRY": "Turkish lira",
     "USD": "US dollar",
     "ZAR": "South African rand"
+  },
+  "about": {
+    "title": "About",
+    "disclaimerTitle": "Not investment advice",
+    "disclaimer": "Market Tracker shows market data for information only. It is not investment, financial, or trading advice. Prices can be delayed or wrong. Check with your exchange before you trade.",
+    "sourcesTitle": "Data sources",
+    "cryptoSource": "Crypto prices and charts: Binance, or Kraken where Binance is unavailable. One source per session, named on every screen.",
+    "fxSource": "Exchange rates: European Central Bank reference rates, via Frankfurter. The ECB publishes once per business day.",
+    "icons": "Coin icons: Cryptocurrency Icons, started by Christopher Downer, with its contributors. Public domain (CC0 1.0).",
+    "version": "Version {{version}}",
+    "open": "About"
   }
 }

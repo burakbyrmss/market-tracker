@@ -8,6 +8,7 @@ import { displayCurrencyCode, type AssetId, type DisplayCurrency } from '@/domai
 import { CHART_RANGES, type ChartRange } from '@/domain/market';
 import { decimal } from '@/domain/money';
 import { ChartSection } from '@/features/chart/chart-section';
+import { coinName } from '@/features/coins';
 import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { cryptoQueries, useLivePrices, type MarketSource } from '@/services/market-data';
@@ -151,11 +152,13 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
 
   const price = formatDisplayPrice(display, currency, locale);
   const change = quote.change24hPct;
+  const name = coinName(assetId);
 
   return (
     <Screen title={assetId}>
       <ScrollView contentContainerClassName="gap-6 p-4">
         <View className="gap-1">
+          {name !== null && <Text className="text-base text-gray-500">{name}</Text>}
           <Text
             testID="detail-price"
             accessibilityLabel={price ?? t('market.priceUnavailable')}
@@ -177,6 +180,7 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
         <PricesNotice />
         <CryptoChart assetId={assetId} source={source} />
         <PriceMethod assetId={assetId} currency={currency} price={display} source={source} />
+        <Text className="text-sm text-gray-500">{t('detail.disclaimer')}</Text>
       </ScrollView>
     </Screen>
   );

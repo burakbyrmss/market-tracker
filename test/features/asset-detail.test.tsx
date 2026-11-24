@@ -96,3 +96,10 @@ test('charts the provider pair, and a range tab switches the chart', async () =>
   await fireEvent.press(screen.getByRole('tab', { name: '1 week' }));
   expect(screen.getByTestId('chart-caption')).toHaveTextContent('+100.00% over 1 week');
 });
+
+test('names the coin and says the screen is not investment advice', async () => {
+  goLive();
+  await renderWithQuery(<AssetDetail assetId={asset('BTC')} />);
+  expect(screen.getByText('Bitcoin')).toBeOnTheScreen();
+  expect(screen.getByText('For information only. Not investment advice.')).toBeOnTheScreen();
+});
