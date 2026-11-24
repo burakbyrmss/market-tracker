@@ -226,12 +226,12 @@ test('live prices are saved when the app goes to the background', async () => {
   advance(5_000);
   sockets.latest().serverSends('50500');
   app.moveTo('background');
-  service.stop();
+  // Read what was saved before stop(), which saves too.
   resetLivePrices();
-
   savedPrices.restore();
   expect(btcPrice()).toBe('50500');
   expect(useLivePrices.getState().asOf).toBe(5_000);
+  service.stop();
 });
 
 test('a dropped socket marks prices as not arriving until the next message', async () => {
