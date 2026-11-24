@@ -16,7 +16,8 @@
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
     "typegen": "node scripts/typegen.mjs",
     "smoke": "jest --config jest.live.config.js",
-    "record-fixtures": "node scripts/record-fixtures.mjs"
+    "record-fixtures": "node scripts/record-fixtures.mjs",
+    "coin-assets": "node scripts/build-coin-assets.mjs"
   },
   "dependencies": {
     "@shopify/flash-list": "2.3.2",
@@ -54,6 +55,7 @@
     "@types/big.js": "^7.0.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
+    "cryptocurrency-icons": "0.18.1",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.4",
     "eslint-config-prettier": "^10.1.8",
