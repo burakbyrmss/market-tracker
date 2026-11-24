@@ -1,3 +1,4 @@
+import { rankTopCoins } from '@/domain/asset-classes';
 import type { AssetId } from '@/domain/ids';
 import { CHART_RANGES, FX_RANGES } from '@/domain/market';
 import { isPositive } from '@/domain/money';
@@ -5,6 +6,8 @@ import { createBinanceProvider } from '@/providers/binance';
 import type { CryptoProvider } from '@/providers/contract';
 import { createFrankfurterProvider } from '@/providers/frankfurter';
 import { createKrakenProvider } from '@/providers/kraken';
+// The JSON, not @/features/coins: plain Node cannot load react-native's Image.
+import coinNames from '@/features/coins/generated/coin-names.json';
 // The JSON, not @/shared/i18n: plain Node cannot load expo-localization.
 import en from '@/shared/i18n/locales/en.json';
 
@@ -69,5 +72,18 @@ describe('Frankfurter live API', () => {
       expect(points[i]!.time).toBeGreaterThan(points[i - 1]!.time);
     }
     expect(points.every((p) => p.price > 0)).toBe(true);
+  });
+});
+
+// M14 exit check: every coin in today's top 100 has a name. The ranking changes daily, so this
+// runs against the live APIs. Fill a gap in scripts/coin-assets/overrides.json.
+describe.each<[string, () => CryptoProvider]>([
+  ['Binance', createBinanceProvider],
+  ['Kraken', createKrakenProvider],
+])('%s top 100', (_, create) => {
+  test('every coin has a name', async () => {
+    const top = rankTopCoins((await create().snapshot()).quotes, 100);
+    const names: Readonly<Record<string, string>> = coinNames;
+    expect(top.filter((id) => names[id] === undefined)).toEqual([]);
   });
 });
