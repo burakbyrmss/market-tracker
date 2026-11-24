@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { FxRates } from '@/domain/fx';
 import { displayCurrencyCode, type AssetId, type DisplayCurrency } from '@/domain/ids';
+import { CoinIcon } from '@/features/coins';
 import { FxRateRow } from '@/features/fx/fx-list';
 import { CryptoRow } from '@/features/market/crypto-list';
 import { PricesNotice } from '@/features/market/prices-notice';
@@ -34,10 +35,20 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 // A row with only a label and a note, for items without a price.
-function PlainRow({ label, note, testID }: { label: string; note: string; testID: string }) {
+function PlainRow({
+  label,
+  note,
+  testID,
+  icon,
+}: {
+  label: string;
+  note: string;
+  testID: string;
+  icon: ReactNode;
+}) {
   return (
     <View accessible testID={testID} className={rowClass}>
-      <LetterAvatar label={label} />
+      {icon}
       <Text className="flex-1 text-base font-semibold text-black dark:text-white">{label}</Text>
       <Text className="text-sm text-gray-500">{note}</Text>
     </View>
@@ -59,7 +70,14 @@ function WatchedCoin({
   if (quote) return <CryptoRow assetId={assetId} currency={currency} fx={fx} />;
   // ADR 0004: a coin the active provider does not list stays in the list, marked as such.
   const note = source ? t('watchlist.unavailable', { source: source.name }) : '–';
-  return <PlainRow label={assetId} note={note} testID={`crypto-row-${assetId}`} />;
+  return (
+    <PlainRow
+      label={assetId}
+      note={note}
+      testID={`crypto-row-${assetId}`}
+      icon={<CoinIcon assetId={assetId} />}
+    />
+  );
 }
 
 function EditButton({
@@ -198,7 +216,13 @@ export function WatchlistView() {
             ) : fx ? (
               <FxRateRow key={code} code={code} fx={fx} display={display} />
             ) : (
-              <PlainRow key={code} label={code} note="–" testID={`fx-row-${code}`} />
+              <PlainRow
+                key={code}
+                label={code}
+                note="–"
+                testID={`fx-row-${code}`}
+                icon={<LetterAvatar label={code} />}
+              />
             ),
           )}
         </Section>

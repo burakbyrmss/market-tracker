@@ -7,12 +7,12 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { FxRates } from '@/domain/fx';
 import type { AssetId, DisplayCurrency } from '@/domain/ids';
+import { CoinIcon, coinName } from '@/features/coins';
 import { useSettings } from '@/features/settings/store';
 import { FX_SOURCE_NAME, fxQueries } from '@/services/fx';
 import { marketData, useLivePrices } from '@/services/market-data';
 import { formatPercentChange } from '@/shared/format';
 import { useFormatLocale } from '@/shared/i18n';
-import { LetterAvatar } from '@/shared/ui/letter-avatar';
 
 import { formatDisplayPrice, useDisplayPrice } from './display-price';
 import { PricesNotice } from './prices-notice';
@@ -32,6 +32,7 @@ export const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }
   const { quote, display } = useDisplayPrice(assetId, currency, fx);
   if (!quote) return null;
 
+  const name = coinName(assetId);
   const price = formatDisplayPrice(display, currency, locale);
   const change = quote.change24hPct;
   const changeText = change === null ? null : formatPercentChange(change, locale);
@@ -49,8 +50,15 @@ export const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }
         className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
       >
         {rank !== undefined && <Text className="w-7 text-right text-xs text-gray-500">{rank}</Text>}
-        <LetterAvatar label={assetId} />
-        <Text className="flex-1 text-base font-semibold text-black dark:text-white">{assetId}</Text>
+        <CoinIcon assetId={assetId} />
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-black dark:text-white">{assetId}</Text>
+          {name !== null && (
+            <Text numberOfLines={1} className="text-sm text-gray-500">
+              {name}
+            </Text>
+          )}
+        </View>
         <View className="items-end">
           <Text
             testID={`price-${assetId}`}
