@@ -35,7 +35,8 @@
           "imageWidth": 76
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -51,6 +52,12 @@
         "projectId": "7d038f66-e36f-4be0-b3d6-fd99f8fe37ba"
       }
     },
-    "owner": "zercek23"
+    "owner": "zercek23",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7d038f66-e36f-4be0-b3d6-fd99f8fe37ba"
+    }
   }
 }

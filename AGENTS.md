@@ -67,7 +67,7 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 ## Security and privacy
 
 - No secrets in the app or repo. Build secrets live in EAS.
-- Sentry: crash reports only. No PII, no replay, no tracing, no analytics SDKs.
+- Sentry: crash reports only. No PII, no replay, no tracing, no analytics SDKs. Options live in `crashReportOptions` (`src/services/crash-reports`), and its test pins them.
 - HTTPS/WSS only. No `console` output in production builds.
 
 ## Style
