@@ -7,6 +7,7 @@ import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import type { Unit } from '@/domain/converter';
 import type { CurrencyCode } from '@/domain/ids';
 import { search } from '@/domain/search';
+import { CoinIcon, coinName } from '@/features/coins';
 import { fxQueries } from '@/services/fx';
 import { useLivePrices } from '@/services/market-data';
 import { useCurrencyName } from '@/shared/i18n';
@@ -43,8 +44,8 @@ function useChoices(query: string): Choice[] {
         key: unitKey({ kind: 'crypto', id }),
         unit: { kind: 'crypto', id },
         label: id,
-        detail: t('converter.crypto'),
-        terms: [id],
+        detail: coinName(id) ?? t('converter.crypto'),
+        terms: [id, coinName(id) ?? ''],
       })),
     ];
   }, [fx, listed, currencyName, t]);
@@ -105,7 +106,11 @@ export function UnitPicker({
               }}
               className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
             >
-              <LetterAvatar label={item.label} />
+              {item.unit.kind === 'crypto' ? (
+                <CoinIcon assetId={item.unit.id} />
+              ) : (
+                <LetterAvatar label={item.label} />
+              )}
               <View className="flex-1">
                 <Text className="text-base font-semibold text-black dark:text-white">
                   {item.label}

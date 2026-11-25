@@ -4,11 +4,13 @@ import { fxQueries } from '@/services/fx';
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import type { ReactNode } from 'react';
 
+import AboutRoute from '@/app/about';
 import AssetRoute from '@/app/asset/[id]';
 import ConverterRoute from '@/app/converter';
 import FxRoute from '@/app/fx/[code]';
 import MarketsScreen from '@/app/index';
 import SearchRoute from '@/app/search';
+import SettingsRoute from '@/app/settings';
 import { EMPTY_WATCHLISTS, useWatchlists } from '@/features/watchlist/store';
 import { resetLivePrices } from '@/services/market-data/live-prices';
 
@@ -103,4 +105,19 @@ test('the markets header opens the converter', async () => {
   await fireEvent.press(screen.getByRole('link', { name: 'Convert' }));
   expect(screen).toHavePathname('/converter');
   expect(screen.getByTestId('converter-result')).toHaveTextContent('$50,000.00');
+});
+
+test('settings open the about screen with the disclaimer and every source', async () => {
+  await renderRouter(
+    { ...routes, settings: SettingsRoute, about: AboutRoute },
+    { wrapper, initialUrl: '/settings' },
+  );
+  await fireEvent.press(screen.getByTestId('open-about'));
+  expect(screen).toHavePathname('/about');
+  expect(screen.getByText('Not investment advice')).toBeOnTheScreen();
+  expect(screen.getByText(/Binance, or Kraken/)).toBeOnTheScreen();
+  expect(
+    screen.getByText(/European Central Bank reference rates, via Frankfurter/),
+  ).toBeOnTheScreen();
+  expect(screen.getByText(/Cryptocurrency Icons.*CC0 1.0/)).toBeOnTheScreen();
 });

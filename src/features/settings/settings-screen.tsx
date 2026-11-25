@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { DISPLAY_CURRENCIES } from '@/domain/ids';
@@ -85,6 +86,15 @@ export function SettingsScreen() {
           onSelect={settings.setDisplayCurrency}
           optionLabel={(currency) => t(`settings.displayCurrency.${currency}`)}
         />
+        <Link href="/about" asChild>
+          <Pressable
+            accessibilityRole="button"
+            testID="open-about"
+            className="h-12 justify-center border-t border-gray-200 dark:border-gray-800"
+          >
+            <Text className="text-base font-semibold text-blue-600">{t('about.open')}</Text>
+          </Pressable>
+        </Link>
       </ScrollView>
     </Screen>
   );

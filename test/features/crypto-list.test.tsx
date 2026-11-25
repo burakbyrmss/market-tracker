@@ -36,6 +36,14 @@ test('lists coins by volume with price and change, without stablecoins', async (
   expect(screen.queryByTestId('crypto-row-USDC')).toBeNull();
 });
 
+test('shows each coin with its name and logo', async () => {
+  goLive();
+  await renderWithQuery(<CryptoList />);
+  const btc = screen.getByTestId('crypto-row-BTC');
+  expect(within(btc).getByText('Bitcoin')).toBeOnTheScreen();
+  expect(within(btc).getByTestId('coin-icon-BTC')).toBeOnTheScreen();
+});
+
 test('names each row for screen readers', async () => {
   goLive();
   await renderWithQuery(<CryptoList />);

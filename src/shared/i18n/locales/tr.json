@@ -102,7 +102,8 @@
     "noUsdPrice": "{{source}} üzerinde {{asset}} için USD fiyatı yok.",
     "noFxRate": "USD/{{currency}} kuru henüz yüklenmedi.",
     "notListed": "{{asset}}, {{source}} üzerinde listelenmiyor.",
-    "notFound": "Bu varlık bulunamadı."
+    "notFound": "Bu varlık bulunamadı.",
+    "disclaimer": "Yalnızca bilgi amaçlıdır. Yatırım tavsiyesi değildir."
   },
   "chart": {
     "loading": "Grafik yükleniyor…",
@@ -164,5 +165,16 @@
     "TRY": "Türk lirası",
     "USD": "ABD doları",
     "ZAR": "Güney Afrika randı"
+  },
+  "about": {
+    "title": "Hakkında",
+    "disclaimerTitle": "Yatırım tavsiyesi değildir",
+    "disclaimer": "Market Tracker piyasa verilerini yalnızca bilgi amacıyla gösterir. Yatırım, finans veya alım satım tavsiyesi değildir. Fiyatlar gecikmeli ya da hatalı olabilir. İşlem yapmadan önce borsanızdan kontrol edin.",
+    "sourcesTitle": "Veri kaynakları",
+    "cryptoSource": "Kripto fiyatları ve grafikler: Binance, Binance’in kullanılamadığı yerlerde Kraken. Oturum başına tek kaynak, her ekranda adı yazılır.",
+    "fxSource": "Döviz kurları: Avrupa Merkez Bankası referans kurları, Frankfurter aracılığıyla. ECB her iş günü bir kez yayımlar.",
+    "icons": "Coin simgeleri: Christopher Downer’ın başlattığı Cryptocurrency Icons, katkıda bulunanlarıyla. Kamu malı (CC0 1.0).",
+    "version": "Sürüm {{version}}",
+    "open": "Hakkında"
   }
 }

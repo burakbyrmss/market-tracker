@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import type { CurrencyCode } from '@/domain/ids';
 import { search } from '@/domain/search';
+import { CoinIcon, coinName } from '@/features/coins';
 import { useWatchlists } from '@/features/watchlist/store';
 import { WatchToggle } from '@/features/watchlist/watch-toggle';
 import { fxQueries } from '@/services/fx';
@@ -30,13 +31,21 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function ResultRow({ label, detail }: { label: string; detail?: string }) {
+function ResultRow({
+  label,
+  detail,
+  icon,
+}: {
+  label: string;
+  detail: string | null;
+  icon: ReactNode;
+}) {
   return (
     <View className="flex-1 flex-row items-center gap-3">
-      <LetterAvatar label={label} />
+      {icon}
       <View className="flex-1">
         <Text className="text-base font-semibold text-black dark:text-white">{label}</Text>
-        {detail !== undefined && <Text className="text-sm text-gray-500">{detail}</Text>}
+        {detail !== null && <Text className="text-sm text-gray-500">{detail}</Text>}
       </View>
     </View>
   );
@@ -59,7 +68,7 @@ export function SearchScreen() {
   const coins = useMemo(
     () =>
       search(
-        listed.map((id) => ({ id, terms: [id] })),
+        listed.map((id) => ({ id, terms: [id, coinName(id) ?? ''] })),
         query,
         RESULTS_PER_MARKET,
       ),
@@ -108,7 +117,11 @@ export function SearchScreen() {
                   <View key={id} className={rowClass}>
                     <Link href={{ pathname: '/asset/[id]', params: { id } }} asChild>
                       <Pressable testID={`search-crypto-${id}`} className="flex-1">
-                        <ResultRow label={id} />
+                        <ResultRow
+                          label={id}
+                          detail={coinName(id)}
+                          icon={<CoinIcon assetId={id} />}
+                        />
                       </Pressable>
                     </Link>
                     <WatchToggle
@@ -125,7 +138,11 @@ export function SearchScreen() {
               <Section title={t('markets.fx')}>
                 {currencies.map((code) => (
                   <View key={code} testID={`search-fx-${code}`} className={rowClass}>
-                    <ResultRow label={code} detail={currencyName(code)} />
+                    <ResultRow
+                      label={code}
+                      detail={currencyName(code)}
+                      icon={<LetterAvatar label={code} />}
+                    />
                     <WatchToggle
                       name={code}
                       watched={watchedCurrencies.includes(code)}

@@ -35,6 +35,14 @@ test('finds coins the market list hides, such as stablecoins', async () => {
   expect(screen.getByTestId('search-crypto-USDC')).toBeOnTheScreen();
 });
 
+test('finds a coin by its name', async () => {
+  goLive();
+  await renderWithQuery(<SearchScreen />);
+  await type('bitco');
+  expect(screen.getByTestId('search-crypto-BTC')).toHaveTextContent(/Bitcoin/);
+  expect(screen.queryByTestId('search-crypto-ETH')).toBeNull();
+});
+
 test('finds a currency by its name in the app language', async () => {
   await i18n.changeLanguage('tr');
   goLive();
