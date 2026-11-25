@@ -76,7 +76,8 @@ npx eas-cli@latest build --profile development --platform <ios|android>
 - Style with NativeWind `className` only. No `StyleSheet`, no inline `style` objects. Every screen renders inside `Screen` (`src/shared/ui/screen.tsx`) for safe areas. A screen below the markets list passes `title` to `Screen` for its header and back button. Do not turn on the native stack header: it covered screen content on device.
 - Register third-party components that take `className` in `src/shared/ui/interop.ts`.
 - `expo-router` `Link` ignores `className` on native. Use `<Link href asChild>` around a `Pressable` with a styled `Text`.
+- Accessibility rules (large text, contrast pairs, labels) are in `docs/standards/accessibility.md`. Text never sits in a fixed `h-*` box: use `min-h-*`.
 - Edit files containing non-ASCII text (`₺`, Turkish strings) as UTF-8. On Windows, Python's default encoding is not UTF-8.
-- Every user-facing string goes through `t()` from `react-i18next`. Add each key to both `src/shared/i18n/locales/en.json` and `tr.json`. The compiler rejects a missing Turkish key or an unknown key.
+- Every user-facing string goes through `t()` from `react-i18next`. Lint fails on letters written straight into JSX. Add each key to both `src/shared/i18n/locales/en.json` and `tr.json`. The compiler rejects a missing Turkish key or an unknown key.
 - Comments explain why, never what.
 - Small, single-purpose commits. Conventional commit messages.
