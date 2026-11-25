@@ -29,7 +29,7 @@ function Message({ title, text }: { title: string; text: string }) {
   return (
     <Screen title={title}>
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="text-center text-base text-gray-500">{text}</Text>
+        <Text className="text-center text-base text-gray-500 dark:text-gray-400">{text}</Text>
       </View>
     </Screen>
   );
@@ -87,7 +87,10 @@ function PriceMethod({
 
   return (
     <View testID="price-method" className="gap-2 rounded-xl bg-gray-100 p-4 dark:bg-gray-900">
-      <Text accessibilityRole="header" className="text-sm font-semibold uppercase text-gray-500">
+      <Text
+        accessibilityRole="header"
+        className="text-sm font-semibold uppercase text-gray-500 dark:text-gray-400"
+      >
         {t('detail.method')}
       </Text>
       {lines.map((line) => (
@@ -158,7 +161,9 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
     <Screen title={assetId}>
       <ScrollView contentContainerClassName="gap-6 p-4">
         <View className="gap-1">
-          {name !== null && <Text className="text-base text-gray-500">{name}</Text>}
+          {name !== null && (
+            <Text className="text-base text-gray-500 dark:text-gray-400">{name}</Text>
+          )}
           <Text
             testID="detail-price"
             accessibilityLabel={price ?? t('market.priceUnavailable')}
@@ -166,11 +171,15 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
           >
             {price ?? '–'}
           </Text>
-          <Text className="text-base text-gray-500">
+          <Text className="text-base text-gray-500 dark:text-gray-400">
             {t('detail.change24h')}:{' '}
             <Text
               className={`tabular-nums ${
-                change === null ? 'text-gray-500' : change < 0 ? 'text-red-600' : 'text-green-600'
+                change === null
+                  ? 'text-gray-500 dark:text-gray-400'
+                  : change < 0
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'text-green-700 dark:text-green-500'
               }`}
             >
               {change === null ? '–' : formatPercentChange(change, locale)}
@@ -180,7 +189,7 @@ export function AssetDetail({ assetId }: { assetId: AssetId }) {
         <PricesNotice />
         <CryptoChart assetId={assetId} source={source} />
         <PriceMethod assetId={assetId} currency={currency} price={display} source={source} />
-        <Text className="text-sm text-gray-500">{t('detail.disclaimer')}</Text>
+        <Text className="text-sm text-gray-500 dark:text-gray-400">{t('detail.disclaimer')}</Text>
       </ScrollView>
     </Screen>
   );

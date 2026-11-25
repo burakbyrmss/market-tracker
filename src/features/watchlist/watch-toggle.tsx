@@ -23,7 +23,9 @@ export function WatchToggle({
       testID={testID}
       className="h-11 w-11 items-center justify-center"
     >
-      <Text className={`text-2xl ${watched ? 'text-yellow-500' : 'text-gray-400'}`}>
+      <Text
+        className={`text-2xl ${watched ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400'}`}
+      >
         {watched ? '★' : '☆'}
       </Text>
     </Pressable>

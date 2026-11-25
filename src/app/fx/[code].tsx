@@ -16,7 +16,9 @@ export default function FxRoute() {
   return (
     <Screen title="">
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="text-center text-base text-gray-500">{t('detail.notFound')}</Text>
+        <Text className="text-center text-base text-gray-500 dark:text-gray-400">
+          {t('detail.notFound')}
+        </Text>
       </View>
     </Screen>
   );

@@ -53,7 +53,7 @@ export function ChartSection<Range extends ChartRange | FxRange>({
   if (query.data === undefined && query.isError) {
     body = (
       <Placeholder>
-        <Text className="text-base text-gray-500">{t('chart.unavailable')}</Text>
+        <Text className="text-base text-gray-500 dark:text-gray-400">{t('chart.unavailable')}</Text>
         <Pressable
           accessibilityRole="button"
           onPress={() => void query.refetch()}
@@ -66,13 +66,13 @@ export function ChartSection<Range extends ChartRange | FxRange>({
   } else if (query.data === undefined) {
     body = (
       <Placeholder>
-        <Text className="text-base text-gray-500">{t('chart.loading')}</Text>
+        <Text className="text-base text-gray-500 dark:text-gray-400">{t('chart.loading')}</Text>
       </Placeholder>
     );
   } else if (query.data.length < 2) {
     body = (
       <Placeholder>
-        <Text className="text-base text-gray-500">{t('chart.empty')}</Text>
+        <Text className="text-base text-gray-500 dark:text-gray-400">{t('chart.empty')}</Text>
       </Placeholder>
     );
   } else {
@@ -114,7 +114,7 @@ export function ChartSection<Range extends ChartRange | FxRange>({
               className={`flex-1 items-center rounded-md py-2 ${selected ? 'bg-white dark:bg-gray-700' : ''}`}
             >
               <Text
-                className={`text-sm font-semibold ${selected ? 'text-black dark:text-white' : 'text-gray-500'}`}
+                className={`text-sm font-semibold ${selected ? 'text-black dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
               >
                 {labelOf(option)}
               </Text>
@@ -122,7 +122,7 @@ export function ChartSection<Range extends ChartRange | FxRange>({
           );
         })}
       </View>
-      <Text className="text-xs text-gray-500">{note}</Text>
+      <Text className="text-xs text-gray-500 dark:text-gray-400">{note}</Text>
     </View>
   );
 }

@@ -29,7 +29,7 @@ function Message({ title, text }: { title: string; text: string }) {
   return (
     <Screen title={title}>
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="text-center text-base text-gray-500">{text}</Text>
+        <Text className="text-center text-base text-gray-500 dark:text-gray-400">{text}</Text>
       </View>
     </Screen>
   );
@@ -73,14 +73,14 @@ export function FxDetail({ code }: { code: CurrencyCode }) {
     <Screen title={code}>
       <ScrollView contentContainerClassName="gap-6 p-4">
         <View className="gap-1">
-          <Text className="text-base text-gray-500">{name}</Text>
+          <Text className="text-base text-gray-500 dark:text-gray-400">{name}</Text>
           <Text
             testID="fx-detail-rate"
             className="text-4xl font-bold tabular-nums text-black dark:text-white"
           >
             {t('fx.unit', { code })} = {formatPrice(rate, quote, locale)}
           </Text>
-          <Text className="text-sm text-gray-500">
+          <Text className="text-sm text-gray-500 dark:text-gray-400">
             {t('fxDetail.rateOf', { date: formatDate(fx.date, locale) })}
           </Text>
         </View>

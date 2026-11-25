@@ -28,7 +28,7 @@ function MarketTab({
       className={`flex-1 items-center rounded-md py-2 ${selected ? 'bg-white dark:bg-gray-700' : ''}`}
     >
       <Text
-        className={`text-sm font-semibold ${selected ? 'text-black dark:text-white' : 'text-gray-500'}`}
+        className={`text-sm font-semibold ${selected ? 'text-black dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
       >
         {t(`markets.${market}`)}
       </Text>
@@ -41,26 +41,28 @@ export default function MarketsScreen() {
   const [market, setMarket] = useState<Market>('crypto');
   return (
     <Screen edges={['top', 'left', 'right']}>
-      <View className="flex-row items-center justify-between px-4 pb-2 pt-2">
+      <View className="flex-row flex-wrap items-center justify-between gap-x-4 px-4 pb-2 pt-2">
         <Text accessibilityRole="header" className="text-2xl font-bold text-black dark:text-white">
           {t('home.title')}
         </Text>
-        <View className="flex-row gap-4">
+        <View className="flex-row flex-wrap gap-x-4">
           <Link href="/search" asChild>
-            <Pressable hitSlop={8}>
-              <Text className="text-base font-semibold text-blue-600">{t('home.openSearch')}</Text>
+            <Pressable hitSlop={8} className="min-h-11 justify-center">
+              <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
+                {t('home.openSearch')}
+              </Text>
             </Pressable>
           </Link>
           <Link href="/converter" asChild>
-            <Pressable hitSlop={8}>
-              <Text className="text-base font-semibold text-blue-600">
+            <Pressable hitSlop={8} className="min-h-11 justify-center">
+              <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
                 {t('home.openConverter')}
               </Text>
             </Pressable>
           </Link>
           <Link href="/settings" asChild>
-            <Pressable hitSlop={8}>
-              <Text className="text-base font-semibold text-blue-600">
+            <Pressable hitSlop={8} className="min-h-11 justify-center">
+              <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
                 {t('home.openSettings')}
               </Text>
             </Pressable>

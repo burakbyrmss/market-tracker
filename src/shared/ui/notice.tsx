@@ -16,7 +16,7 @@ export function Notice({ text, onRetry }: { text: string; onRetry?: () => void }
         {text}
       </Text>
       {onRetry && (
-        <Pressable accessibilityRole="button" onPress={onRetry} className="h-11 justify-center">
+        <Pressable accessibilityRole="button" onPress={onRetry} className="min-h-11 justify-center">
           <Text className="font-semibold text-blue-700 dark:text-blue-300">
             {t('market.retry')}
           </Text>
