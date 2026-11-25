@@ -49,14 +49,14 @@ export function LineChart({ points, rangeName, formatValue, formatTime }: LineCh
 
   return (
     <View className="gap-2">
-      <View className="h-12 justify-center">
+      <View className="min-h-12 justify-center">
         <Text
           testID="chart-value"
           className="text-lg font-semibold tabular-nums text-black dark:text-white"
         >
           {formatValue((scrubbed ?? last).price)}
         </Text>
-        <Text testID="chart-caption" className="text-sm text-gray-500">
+        <Text testID="chart-caption" className="text-sm text-gray-500 dark:text-gray-400">
           {scrubbed
             ? formatTime(scrubbed.time)
             : change === null

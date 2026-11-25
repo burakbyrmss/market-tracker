@@ -37,24 +37,28 @@ export const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }
   const change = quote.change24hPct;
   const changeText = change === null ? null : formatPercentChange(change, locale);
   const priceLabel = price ?? t('market.priceUnavailable');
+  // A screen reader says the name too, since many tickers mean nothing out loud.
+  const spoken = name === null ? assetId : `${name}, ${assetId}`;
 
   return (
     <Link href={{ pathname: '/asset/[id]', params: { id: assetId } }} asChild>
       <Pressable
         accessibilityLabel={
           changeText
-            ? t('market.rowLabel', { asset: assetId, price: priceLabel, change: changeText })
-            : t('market.rowLabelNoChange', { asset: assetId, price: priceLabel })
+            ? t('market.rowLabel', { asset: spoken, price: priceLabel, change: changeText })
+            : t('market.rowLabelNoChange', { asset: spoken, price: priceLabel })
         }
         testID={`crypto-row-${assetId}`}
-        className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
+        className="min-h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 py-2 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
       >
-        {rank !== undefined && <Text className="w-7 text-right text-xs text-gray-500">{rank}</Text>}
+        {rank !== undefined && (
+          <Text className="w-7 text-right text-xs text-gray-500 dark:text-gray-400">{rank}</Text>
+        )}
         <CoinIcon assetId={assetId} />
         <View className="flex-1">
           <Text className="text-base font-semibold text-black dark:text-white">{assetId}</Text>
           {name !== null && (
-            <Text numberOfLines={1} className="text-sm text-gray-500">
+            <Text numberOfLines={1} className="text-sm text-gray-500 dark:text-gray-400">
               {name}
             </Text>
           )}
@@ -68,7 +72,11 @@ export const CryptoRow = memo(function CryptoRow({ assetId, rank, currency, fx }
           </Text>
           <Text
             className={`text-sm tabular-nums ${
-              change === null ? 'text-gray-500' : change < 0 ? 'text-red-600' : 'text-green-600'
+              change === null
+                ? 'text-gray-500 dark:text-gray-400'
+                : change < 0
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-green-700 dark:text-green-500'
             }`}
           >
             {changeText ?? '–'}
@@ -112,7 +120,7 @@ export function CryptoList() {
   if (!hasPrices) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-base text-gray-500">{t('market.loading')}</Text>
+        <Text className="text-base text-gray-500 dark:text-gray-400">{t('market.loading')}</Text>
       </View>
     );
   }
@@ -130,7 +138,7 @@ export function CryptoList() {
           <CryptoRow assetId={item} rank={index + 1} currency={currency} fx={fx} />
         )}
       />
-      <Text className="px-4 py-2 text-center text-xs text-gray-500">
+      <Text className="px-4 py-2 text-center text-xs text-gray-500 dark:text-gray-400">
         {currency === 'USD'
           ? t('market.source', { name: source.name })
           : t('market.sources', { crypto: source.name, fx: FX_SOURCE_NAME })}

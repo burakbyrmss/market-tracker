@@ -22,7 +22,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
     <View>
       <Text
         accessibilityRole="header"
-        className="px-4 pb-1 pt-4 text-sm font-semibold uppercase text-gray-500"
+        className="px-4 pb-1 pt-4 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400"
       >
         {title}
       </Text>
@@ -45,14 +45,16 @@ function ResultRow({
       {icon}
       <View className="flex-1">
         <Text className="text-base font-semibold text-black dark:text-white">{label}</Text>
-        {detail !== null && <Text className="text-sm text-gray-500">{detail}</Text>}
+        {detail !== null && (
+          <Text className="text-sm text-gray-500 dark:text-gray-400">{detail}</Text>
+        )}
       </View>
     </View>
   );
 }
 
 const rowClass =
-  'h-16 flex-row items-center border-b border-gray-200 pl-4 pr-2 dark:border-gray-800';
+  'min-h-16 flex-row py-2 items-center border-b border-gray-200 pl-4 pr-2 dark:border-gray-800';
 
 export function SearchScreen() {
   const { t } = useTranslation();
@@ -104,9 +106,11 @@ export function SearchScreen() {
       />
       <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         {empty ? (
-          <Text className="px-4 py-6 text-center text-base text-gray-500">{t('search.hint')}</Text>
+          <Text className="px-4 py-6 text-center text-base text-gray-500 dark:text-gray-400">
+            {t('search.hint')}
+          </Text>
         ) : coins.length === 0 && currencies.length === 0 ? (
-          <Text className="px-4 py-6 text-center text-base text-gray-500">
+          <Text className="px-4 py-6 text-center text-base text-gray-500 dark:text-gray-400">
             {t('search.noMatches')}
           </Text>
         ) : (

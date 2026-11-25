@@ -18,8 +18,9 @@ function colorFor(label: string): string {
   return COLORS[hash % COLORS.length] ?? 'bg-slate-600';
 }
 
-// Stands in for a coin logo until M14 bundles real logos. The same ticker always gets the same
-// color. Decorative: the row's label already names the coin.
+// Stands in for a logo the bundled set lacks. The same ticker always gets the same
+// color. Decorative: the row's label already names the coin. Its letter barely grows with large
+// text, so it stays inside the circle.
 export function LetterAvatar({ label }: { label: string }) {
   return (
     <View
@@ -27,7 +28,9 @@ export function LetterAvatar({ label }: { label: string }) {
       importantForAccessibility="no-hide-descendants"
       className={`h-9 w-9 items-center justify-center rounded-full ${colorFor(label)}`}
     >
-      <Text className="text-base font-bold text-white">{label.slice(0, 1)}</Text>
+      <Text maxFontSizeMultiplier={1.2} className="text-base font-bold text-white">
+        {label.slice(0, 1)}
+      </Text>
     </View>
   );
 }

@@ -48,6 +48,23 @@ const noBigJs = {
     'Use src/domain/money.ts for money arithmetic. See docs/decisions/0006-decimal-money-module.md.',
 };
 
+// Text a user sees or hears must come from t(), so it exists in both languages. Catches letters
+// written straight into JSX: as text, as a {'literal'}, and in props a screen reader reads out.
+const untranslated =
+  'Put user-facing text in the locale files and show it with t(). See AGENTS.md.';
+const spokenProps =
+  '/^(accessibilityLabel|accessibilityHint|accessibilityValue|aria-label|placeholder|title|label|text|note)$/';
+const hasLetters = '/[A-Za-z]/';
+const noUntranslatedText = [
+  `JSXText[value=${hasLetters}]`,
+  `JSXElement > JSXExpressionContainer > Literal[value=${hasLetters}]`,
+  `JSXElement > JSXExpressionContainer > ConditionalExpression > Literal[value=${hasLetters}]`,
+  `JSXElement > JSXExpressionContainer > TemplateLiteral > TemplateElement[value.raw=${hasLetters}]`,
+  `JSXAttribute[name.name=${spokenProps}] > Literal[value=${hasLetters}]`,
+  `JSXAttribute[name.name=${spokenProps}] > JSXExpressionContainer > Literal[value=${hasLetters}]`,
+  `JSXAttribute[name.name=${spokenProps}] > JSXExpressionContainer > TemplateLiteral > TemplateElement[value.raw=${hasLetters}]`,
+].map((selector) => ({ selector, message: untranslated }));
+
 module.exports = defineConfig([
   expoConfig,
   prettierConfig,
@@ -61,6 +78,12 @@ module.exports = defineConfig([
       '@typescript-eslint/ban-ts-comment': 'error',
       'no-console': 'error',
       'no-restricted-syntax': ['error', noStyleSheet, noBigJs],
+    },
+  },
+  {
+    files: ['src/**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': ['error', noStyleSheet, noBigJs, ...noUntranslatedText],
     },
   },
   ...layerConfigs,

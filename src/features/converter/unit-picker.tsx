@@ -104,7 +104,7 @@ export function UnitPicker({
                 setQuery('');
                 onPick(item.unit);
               }}
-              className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
+              className="min-h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 py-2 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
             >
               {item.unit.kind === 'crypto' ? (
                 <CoinIcon assetId={item.unit.id} />
@@ -115,7 +115,7 @@ export function UnitPicker({
                 <Text className="text-base font-semibold text-black dark:text-white">
                   {item.label}
                 </Text>
-                <Text className="text-sm text-gray-500">{item.detail}</Text>
+                <Text className="text-sm text-gray-500 dark:text-gray-400">{item.detail}</Text>
               </View>
             </Pressable>
           )}

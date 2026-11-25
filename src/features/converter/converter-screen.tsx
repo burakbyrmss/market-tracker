@@ -59,11 +59,13 @@ function UnitButton({
       className="flex-row items-center justify-between rounded-xl bg-gray-100 px-4 py-3 active:bg-gray-200 dark:bg-gray-900 dark:active:bg-gray-800"
     >
       <View>
-        <Text className="text-xs uppercase text-gray-500">{t(`converter.${side}`)}</Text>
+        <Text className="text-xs uppercase text-gray-500 dark:text-gray-400">
+          {t(`converter.${side}`)}
+        </Text>
         <Text className="text-xl font-semibold text-black dark:text-white">{label}</Text>
-        <Text className="text-sm text-gray-500">{detail}</Text>
+        <Text className="text-sm text-gray-500 dark:text-gray-400">{detail}</Text>
       </View>
-      <Text className="text-xl text-gray-400">›</Text>
+      <Text className="text-xl text-gray-500 dark:text-gray-400">›</Text>
     </Pressable>
   );
 }
@@ -124,7 +126,7 @@ export function ConverterScreen() {
           className="rounded-xl bg-gray-100 px-4 py-3 text-2xl tabular-nums text-black dark:bg-gray-900 dark:text-white"
         />
         {amount === null && (
-          <Text accessibilityLiveRegion="polite" className="text-sm text-red-600">
+          <Text accessibilityLiveRegion="polite" className="text-sm text-red-600 dark:text-red-400">
             {t('converter.invalid')}
           </Text>
         )}
@@ -139,7 +141,7 @@ export function ConverterScreen() {
           }}
           className="h-11 w-11 items-center justify-center self-center rounded-full bg-gray-100 dark:bg-gray-900"
         >
-          <Text className="text-xl text-blue-600">⇅</Text>
+          <Text className="text-xl text-blue-600 dark:text-blue-400">⇅</Text>
         </Pressable>
         <UnitButton side="to" unit={to} onPress={() => setPicking('to')} />
 
@@ -154,21 +156,27 @@ export function ConverterScreen() {
                 >
                   {formatIn(result.amount, to, locale)}
                 </Text>
-                <Text testID="converter-rate" className="text-base text-gray-500">
+                <Text
+                  testID="converter-rate"
+                  className="text-base text-gray-500 dark:text-gray-400"
+                >
                   {t('converter.rate', {
                     from: unitLabel(from),
                     rate: formatIn(result.rate, to, locale),
                   })}
                 </Text>
                 {notes.map((note) => (
-                  <Text key={note} className="text-sm text-gray-500">
+                  <Text key={note} className="text-sm text-gray-500 dark:text-gray-400">
                     {note}
                   </Text>
                 ))}
                 {(from.kind === 'crypto' || to.kind === 'crypto') && <PricesNotice />}
               </>
             ) : (
-              <Text testID="converter-result" className="text-base text-gray-500">
+              <Text
+                testID="converter-result"
+                className="text-base text-gray-500 dark:text-gray-400"
+              >
                 {t('converter.unavailable')}
               </Text>
             )}

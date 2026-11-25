@@ -18,14 +18,14 @@ import { LetterAvatar } from '@/shared/ui/letter-avatar';
 import { useWatchlists, type WatchMarket } from './store';
 
 const rowClass =
-  'h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 dark:border-gray-800';
+  'min-h-16 flex-row py-2 items-center gap-3 border-b border-gray-200 px-4 dark:border-gray-800';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View>
       <Text
         accessibilityRole="header"
-        className="px-4 pb-1 pt-4 text-sm font-semibold uppercase text-gray-500"
+        className="px-4 pb-1 pt-4 text-sm font-semibold uppercase text-gray-500 dark:text-gray-400"
       >
         {title}
       </Text>
@@ -50,7 +50,7 @@ function PlainRow({
     <View accessible testID={testID} className={rowClass}>
       {icon}
       <Text className="flex-1 text-base font-semibold text-black dark:text-white">{label}</Text>
-      <Text className="text-sm text-gray-500">{note}</Text>
+      <Text className="text-sm text-gray-500 dark:text-gray-400">{note}</Text>
     </View>
   );
 }
@@ -97,7 +97,7 @@ function EditButton({
       onPress={onPress}
       className="h-11 w-11 items-center justify-center"
     >
-      <Text className="text-xl text-blue-600">{text}</Text>
+      <Text className="text-xl text-blue-600 dark:text-blue-400">{text}</Text>
     </Pressable>
   );
 }
@@ -153,7 +153,9 @@ export function WatchlistView() {
   if (coins.length === 0 && currencies.length === 0) {
     return (
       <View className="flex-1 items-center justify-center gap-4 px-8">
-        <Text className="text-center text-base text-gray-500">{t('watchlist.empty')}</Text>
+        <Text className="text-center text-base text-gray-500 dark:text-gray-400">
+          {t('watchlist.empty')}
+        </Text>
         <Link href="/search" asChild>
           <Pressable className="rounded-lg bg-blue-600 px-4 py-2">
             <Text className="font-semibold text-white">{t('home.openSearch')}</Text>
@@ -171,9 +173,9 @@ export function WatchlistView() {
         <Pressable
           accessibilityRole="button"
           onPress={() => setEditing(!editing)}
-          className="h-11 justify-center px-2"
+          className="min-h-11 justify-center px-2"
         >
-          <Text className="text-base font-semibold text-blue-600">
+          <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
             {t(editing ? 'watchlist.done' : 'watchlist.edit')}
           </Text>
         </Pressable>
@@ -227,7 +229,7 @@ export function WatchlistView() {
           )}
         </Section>
       )}
-      <Text className="px-4 py-3 text-center text-xs text-gray-500">
+      <Text className="px-4 py-3 text-center text-xs text-gray-500 dark:text-gray-400">
         {source
           ? t('market.sources', { crypto: source.name, fx: FX_SOURCE_NAME })
           : t('market.source', { name: FX_SOURCE_NAME })}

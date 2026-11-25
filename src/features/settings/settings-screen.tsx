@@ -24,7 +24,10 @@ function OptionGroup<T extends string>({
 }: OptionGroupProps<T>) {
   return (
     <View className="gap-2">
-      <Text accessibilityRole="header" className="text-sm font-semibold uppercase text-gray-500">
+      <Text
+        accessibilityRole="header"
+        className="text-sm font-semibold uppercase text-gray-500 dark:text-gray-400"
+      >
         {label}
       </Text>
       <View
@@ -90,9 +93,11 @@ export function SettingsScreen() {
           <Pressable
             accessibilityRole="button"
             testID="open-about"
-            className="h-12 justify-center border-t border-gray-200 dark:border-gray-800"
+            className="min-h-12 justify-center border-t border-gray-200 py-2 dark:border-gray-800"
           >
-            <Text className="text-base font-semibold text-blue-600">{t('about.open')}</Text>
+            <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
+              {t('about.open')}
+            </Text>
           </Pressable>
         </Link>
       </ScrollView>

@@ -34,14 +34,14 @@ export function FxRateRow({
       <Pressable
         accessibilityLabel={t('fx.rowLabel', { code, name, value })}
         testID={`fx-row-${code}`}
-        className="h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
+        className="min-h-16 flex-row items-center gap-3 border-b border-gray-200 px-4 py-2 active:bg-gray-100 dark:border-gray-800 dark:active:bg-gray-900"
       >
         <LetterAvatar label={code} />
         <View className="flex-1">
           <Text className="text-base font-semibold text-black dark:text-white">
             {t('fx.unit', { code })}
           </Text>
-          <Text className="text-sm text-gray-500">{name}</Text>
+          <Text className="text-sm text-gray-500 dark:text-gray-400">{name}</Text>
         </View>
         <Text className="text-base tabular-nums text-black dark:text-white">{value}</Text>
       </Pressable>
@@ -83,14 +83,14 @@ export function FxList() {
   if (!fx) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-base text-gray-500">{t('fx.loading')}</Text>
+        <Text className="text-base text-gray-500 dark:text-gray-400">{t('fx.loading')}</Text>
       </View>
     );
   }
 
   return (
     <View className="flex-1">
-      <Text className="px-4 pb-2 text-sm text-gray-500">
+      <Text className="px-4 pb-2 text-sm text-gray-500 dark:text-gray-400">
         {t('fx.ratesOf', { date: formatDate(fx.date, locale) })}
       </Text>
       {query.isError && (
@@ -104,7 +104,7 @@ export function FxList() {
         extraData={display}
         renderItem={({ item }) => <FxRateRow code={item} fx={fx} display={display} />}
       />
-      <Text className="px-4 py-2 text-center text-xs text-gray-500">
+      <Text className="px-4 py-2 text-center text-xs text-gray-500 dark:text-gray-400">
         {t('market.source', { name: FX_SOURCE_NAME })}
       </Text>
     </View>

@@ -37,7 +37,9 @@ export function AboutScreen() {
           <Paragraph>{t('about.icons')}</Paragraph>
         </Section>
         {version !== undefined && (
-          <Text className="text-sm text-gray-500">{t('about.version', { version })}</Text>
+          <Text className="text-sm text-gray-500 dark:text-gray-400">
+            {t('about.version', { version })}
+          </Text>
         )}
       </ScrollView>
     </Screen>

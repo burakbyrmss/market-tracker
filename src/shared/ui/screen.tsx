@@ -19,7 +19,7 @@ function ScreenHeader({ title, onBack }: { title: string; onBack?: () => void })
   const { t } = useTranslation();
   const router = useRouter();
   return (
-    <View className="h-12 flex-row items-center border-b border-gray-200 px-1 dark:border-gray-800">
+    <View className="min-h-12 flex-row items-center border-b border-gray-200 px-1 dark:border-gray-800">
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('common.back')}
@@ -32,7 +32,7 @@ function ScreenHeader({ title, onBack }: { title: string; onBack?: () => void })
         }}
         className="h-11 w-11 items-center justify-center"
       >
-        <Text className="text-3xl leading-9 text-blue-600">‹</Text>
+        <Text className="text-3xl leading-9 text-blue-600 dark:text-blue-400">‹</Text>
       </Pressable>
       <Text
         accessibilityRole="header"

@@ -44,11 +44,11 @@ test('shows each coin with its name and logo', async () => {
   expect(within(btc).getByTestId('coin-icon-BTC')).toBeOnTheScreen();
 });
 
-test('names each row for screen readers', async () => {
+test('names each row for screen readers, with the coin name', async () => {
   goLive();
   await renderWithQuery(<CryptoList />);
-  expect(screen.getByLabelText('BTC, $50,000.00, +2.50%')).toBeOnTheScreen();
-  expect(screen.getByLabelText('DOGE, $0.10')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Bitcoin, BTC, $50,000.00, +2.50%')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Dogecoin, DOGE, $0.10')).toBeOnTheScreen();
 });
 
 test('shows the data source', async () => {
@@ -213,6 +213,6 @@ describe('display currency', () => {
     await renderWithQuery(<CryptoList />, null);
 
     expect(priceOf('ETH')).toHaveTextContent('–');
-    expect(screen.getByLabelText('ETH, price unavailable, -1.50%')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Ethereum, ETH, price unavailable, -1.50%')).toBeOnTheScreen();
   });
 });
