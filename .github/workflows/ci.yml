@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Development builds run only when started by hand: Actions → CI → Run workflow.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -39,11 +41,10 @@ jobs:
         run: npm audit --audit-level=high
 
   eas-development-build:
-    # Every update to main makes sure a development build exists for its native fingerprint, so
-    # the binaries on the phones always match main's native dependencies (ADR 0001). Changes that
-    # only touch JavaScript or docs reuse the existing build.
+    # Off on push since 2026-11-27 to save the EAS plan's build quota. Started by hand, it queues
+    # a development build only for a native fingerprint that has none yet (ADR 0001).
     needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency:
       group: eas-development-build
