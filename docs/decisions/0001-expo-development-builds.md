@@ -19,7 +19,7 @@ Use the current Expo SDK with development builds from M1. EAS Build produces the
 
 ## Consequences
 
-- Each native dependency change needs a new development build. CI (`scripts/eas-dev-build.mjs`) queues one on a push to `main` only when the platform's native fingerprint has no queued, running, or finished development build. Changes that only touch JavaScript or docs spend no build quota.
+- Each native dependency change needs a new development build. CI (`scripts/eas-dev-build.mjs`) queues one, when started by hand on `main` (Run workflow), only when the platform's native fingerprint has no queued, running, or finished development build. Changes that only touch JavaScript or docs spend no build quota.
 - The minimum iOS and Android versions follow the Expo SDK. M1 records them in an ADR.
 
 ## Sources
