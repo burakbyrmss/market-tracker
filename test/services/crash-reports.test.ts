@@ -2,7 +2,16 @@ import * as Sentry from '@sentry/react-native';
 
 import { crashReportOptions, startCrashReports } from '@/services/crash-reports';
 
-jest.mock('@sentry/react-native', () => ({ init: jest.fn() }));
+const mockSetTag = jest.fn();
+jest.mock('@sentry/react-native', () => ({
+  init: jest.fn(),
+  getGlobalScope: () => ({ setTag: mockSetTag }),
+}));
+jest.mock('expo-updates', () => ({
+  updateId: 'update-1',
+  isEmbeddedLaunch: false,
+  channel: 'production',
+}));
 
 type Options = ReturnType<typeof crashReportOptions>;
 type SentEvent = Parameters<NonNullable<Options['beforeSend']>>[0];
@@ -43,4 +52,11 @@ test('starts Sentry from the public DSN in the build environment', () => {
   startCrashReports();
   // Jest runs as a development build, and the test environment sets no DSN.
   expect(Sentry.init).toHaveBeenCalledWith(expect.objectContaining({ enabled: false }));
+});
+
+test('tags each report with the EAS Update it ran', () => {
+  startCrashReports();
+  expect(mockSetTag).toHaveBeenCalledWith('expo-update-id', 'update-1');
+  expect(mockSetTag).toHaveBeenCalledWith('expo-is-embedded-update', 'false');
+  expect(mockSetTag).toHaveBeenCalledWith('expo-channel', 'production');
 });

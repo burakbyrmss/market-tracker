@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react-native';
+import * as Updates from 'expo-updates';
 
 type CrashReportOptions = Parameters<typeof Sentry.init>[0];
 
@@ -33,4 +34,9 @@ export function crashReportOptions(dsn: string | undefined, isDev: boolean): Cra
 
 export function startCrashReports(): void {
   Sentry.init(crashReportOptions(process.env.EXPO_PUBLIC_SENTRY_DSN, __DEV__));
+  // A crash after an EAS Update must name the JavaScript it ran, not only the store build (ADR 0010).
+  const scope = Sentry.getGlobalScope();
+  scope.setTag('expo-update-id', Updates.updateId ?? 'embedded');
+  scope.setTag('expo-is-embedded-update', String(Updates.isEmbeddedLaunch));
+  scope.setTag('expo-channel', Updates.channel ?? 'none');
 }

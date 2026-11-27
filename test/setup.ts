@@ -4,3 +4,9 @@ jest.mock('react-native-nitro-modules', () => ({ NitroModules: {} }));
 
 // FlashList measures its container. Jest has no layout, so it uses fixed sizes.
 require('@shopify/flash-list/jestSetup');
+
+// Tests never use the network. A query a test forgot to seed fails at once, with the URL,
+// instead of reaching React Native's mock fetch.
+globalThis.fetch = async (input: RequestInfo | URL) => {
+  throw new Error(`Test tried to fetch ${String(input)}. Seed the query or pass a fake fetch.`);
+};
